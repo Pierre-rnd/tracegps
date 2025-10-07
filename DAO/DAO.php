@@ -749,7 +749,11 @@ class DAO
     // début de la zone attribuée au développeur 3 (Matheo Guiboux) : lignes 750 à 949
     // --------------------------------------------------------------------------------------
     public function creerUneAutorisation($idAutorisant, $idAutorise){
-        $sql = "INSERT INTO tracegps_autorisations (idAutorisant, idAutorise) VALUES ($idAutorisant,$idAutorise)";
+        $txt_req = "INSERT INTO tracegps_autorisations (idAutorisant, idAutorise)";
+        $req = $this->cnx->prepare($txt_req);
+        $req->bindValue("idAutorisant", $idAutorisant, PDO::PARAM_STR);
+        $req->bindValue("idAutorise", $idAutorise, PDO::PARAM_STR);
+        $req->execute();
     }
     
     
