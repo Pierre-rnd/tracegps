@@ -37,11 +37,11 @@
 
 
 // certaines méthodes nécessitent les classes suivantes :
-include_once ('Utilisateur.php');
-include_once ('Trace.php');
-include_once ('PointDeTrace.php');
-include_once ('Point.php');
-include_once ('Outils.php');
+include_once(__DIR__ . '/../modele/Utilisateur.php');
+include_once(__DIR__ . '/../modele/Trace.php');
+include_once(__DIR__ . '/../modele/PointDeTrace.php');
+include_once(__DIR__ . '/../modele/Point.php');
+include_once(__DIR__ . '/../modele/Outils.php');
 
 // inclusion des paramètres de l'application
 include_once ('parametres.php');
@@ -349,8 +349,27 @@ class DAO
     // début de la zone attribuée au développeur 1 (Pierre Renard) : lignes 350 à 549
     // --------------------------------------------------------------------------------------
     
-
-    
+    public function existeAdrMailUtilisateur($adrMail)
+    {
+        // préparation de la requête de recherche
+        $txt_req = "Select count(*) from tracegps_utilisateurs where adrMail = :adrMail";
+        $req = $this->cnx->prepare($txt_req);
+        // liaison de la requête et de ses paramètres
+        $req->bindValue("adrMail", $adrMail, PDO::PARAM_STR);
+        // exécution de la requête
+        $req->execute();
+        $nbReponses = $req->fetchColumn(0);
+        // libère les ressources du jeu de données
+        $req->closeCursor();
+        
+        // fourniture de la réponse
+        if ($nbReponses == 0) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
     
     
     
@@ -755,7 +774,7 @@ class DAO
     
     
     
-    test
+    
     
     
     
