@@ -748,16 +748,19 @@ class DAO
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 3 (Matheo Guiboux) : lignes 750 à 949
     // --------------------------------------------------------------------------------------
+    public function creerUneAutorisation($idAutorisant, $idAutorise){
+        $sql = "INSERT INTO tracegps_autorisations (idAutorisant, idAutorise) VALUES ($idAutorisant,$idAutorise)";
+    }
     
     
     
     
     
     
+
+
     
-    test
-    
-    
+
     
     
     
