@@ -952,11 +952,11 @@ class DAO
     {
         $allLesPointsTraces = getLesPointsDeTrace($idTrace)
         
-
-        for ($i=0; $i> $allLesPointsTraces; $allLesPointsTraces[$i++] )
+        for ($i=0; $i> sizeof($allLesPointsTraces); $allLesPointsTraces[$i++] )
         {
-            $all
+           
         }
+        return $allLesPointsTraces;
     }
     
     
