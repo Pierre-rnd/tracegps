@@ -948,7 +948,14 @@ class DAO
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 4 (François Grondin) : lignes 950 à 1150
     // --------------------------------------------------------------------------------------
+<<<<<<< Updated upstream
     
+=======
+    public function getToutesLesTraces()
+    {
+        test
+    }
+>>>>>>> Stashed changes
     
     
     
