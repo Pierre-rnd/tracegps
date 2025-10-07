@@ -160,15 +160,15 @@ class DAO
         }
         else {
             // création d'un objet Utilisateur
-            $unId = utf8_encode($uneLigne->id);
-            $unPseudo = utf8_encode($uneLigne->pseudo);
-            $unMdpSha1 = utf8_encode($uneLigne->mdpSha1);
-            $uneAdrMail = utf8_encode($uneLigne->adrMail);
-            $unNumTel = utf8_encode($uneLigne->numTel);
-            $unNiveau = utf8_encode($uneLigne->niveau);
-            $uneDateCreation = utf8_encode($uneLigne->dateCreation);
-            $unNbTraces = utf8_encode($uneLigne->nbTraces);
-            $uneDateDerniereTrace = utf8_encode($uneLigne->dateDerniereTrace);
+            $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
+            $unPseudo = mb_convert_encoding($uneLigne->pseudo, 'UTF-8', 'ISO-8859-1');
+            $unMdpSha1 = mb_convert_encoding($uneLigne->mdpSha1, 'UTF-8', 'ISO-8859-1');
+            $uneAdrMail = mb_convert_encoding($uneLigne->adrMail, 'UTF-8', 'ISO-8859-1');
+            $unNumTel = mb_convert_encoding($uneLigne->numTel, 'UTF-8', 'ISO-8859-1');
+            $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
+            $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
+            $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
+            $uneDateDerniereTrace = mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1');
             
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             return $unUtilisateur;
@@ -196,15 +196,15 @@ class DAO
         // tant qu'une ligne est trouvée :
         while ($uneLigne) {
             // création d'un objet Utilisateur
-            $unId = utf8_encode($uneLigne->id);
-            $unPseudo = utf8_encode($uneLigne->pseudo);
-            $unMdpSha1 = utf8_encode($uneLigne->mdpSha1);
-            $uneAdrMail = utf8_encode($uneLigne->adrMail);
-            $unNumTel = utf8_encode($uneLigne->numTel);
-            $unNiveau = utf8_encode($uneLigne->niveau);
-            $uneDateCreation = utf8_encode($uneLigne->dateCreation);
-            $unNbTraces = utf8_encode($uneLigne->nbTraces);
-            $uneDateDerniereTrace = utf8_encode($uneLigne->dateDerniereTrace);
+            $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
+            $unPseudo = mb_convert_encoding($uneLigne->pseudo, 'UTF-8', 'ISO-8859-1');
+            $unMdpSha1 = mb_convert_encoding($uneLigne->mdpSha1, 'UTF-8', 'ISO-8859-1');
+            $uneAdrMail = mb_convert_encoding($uneLigne->adrMail, 'UTF-8', 'ISO-8859-1');
+            $unNumTel = mb_convert_encoding($uneLigne->numTel, 'UTF-8', 'ISO-8859-1');
+            $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
+            $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
+            $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
+            $uneDateDerniereTrace = mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1');
             
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             // ajout de l'utilisateur à la collection
@@ -567,45 +567,46 @@ class DAO
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 2 (Johann Lucas) : lignes 550 à 749
     // --------------------------------------------------------------------------------------
-    
+    public function getLesPointsDeTrace($idTrace)
+    {
+        $lesPoints = array();
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+        // Préparation de la requête SQL
+        $req = "SELECT idTrace, id, latitude, longitude, altitude, dateHeure, rythmeCardio
+                FROM pointstraces
+                WHERE idTrace = :idTrace
+                ORDER BY idTrace ASC";
+
+        $stmt = $this->cnx->prepare($req);
+        $stmt->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
+        $stmt->execute();
+
+        // Parcours des enregistrements retournés
+        $ligne = $stmt->fetch(PDO::FETCH_ASSOC);
+        while ($ligne) {
+            // Création d’un objet PointDeTrace
+            $unPoint = new PointDeTrace(
+                $ligne["idTrace"],
+                $ligne["id"],
+                $ligne["latitude"],
+                $ligne["longitude"],
+                $ligne["altitude"],
+                $ligne["dateHeure"],
+                $ligne["rythmeCardio"]
+            );
+
+            // Ajout à la collection
+            $lesPoints[] = $unPoint;
+
+            $ligne = $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        $stmt->closeCursor();
+
+        return $lesPoints;
+    }
+
+
     
     
     
