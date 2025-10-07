@@ -950,8 +950,15 @@ class DAO
     // --------------------------------------------------------------------------------------
     public function getToutesLesTraces()
     {
+        $allLesPointsTraces = getLesPointsDeTrace($idTrace)
         
+
+        for ($i=0; $i> $allLesPointsTraces; $allLesPointsTraces[$i++] )
+        {
+            $all
+        }
     }
+    
     
     
     
