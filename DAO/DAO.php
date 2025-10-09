@@ -168,7 +168,7 @@ class DAO
             $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
             $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
             $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
-            $uneDateDerniereTrace = mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1');            
+            $uneDateDerniereTrace = $uneLigne->dateDerniereTrace != null ? mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1'): "";            
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             return $unUtilisateur;
         }
@@ -203,7 +203,7 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
             $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
             $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
             $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
-            $uneDateDerniereTrace = mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1');            
+            $uneDateDerniereTrace = $uneLigne->dateDerniereTrace != null ? mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1'): "";            
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             // ajout de l'utilisateur à la collection
             $lesUtilisateurs[] = $unUtilisateur;
@@ -408,7 +408,7 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
         return $lesUtilisateurs;
     }
     
-    public function getLesUtilisateursAutorisant($idUtilisateur)
+    public function getLesUtilisateursAutorises($idUtilisateur)
     {
         $txt_req = "Select u.id, u.pseudo, u.mdpSha1, u.adrMail, u.numTel, u.niveau, 
                        u.dateCreation, u.nbTraces, u.dateDerniereTrace
@@ -449,7 +449,10 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
     }
     
     
-    
+    public function autoriseAConsulter($idAutorisant, $idAutorise)
+    {
+        $autorise = $this->getLesUtilisateursAutorises($idAutorise);
+    }
     
     
     
