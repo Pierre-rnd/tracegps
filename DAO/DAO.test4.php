@@ -35,6 +35,17 @@ $dao = new DAO();
 // modifié par xxxxxxxxxxxxxxxxx le xxxxxxxxxx
 echo "<h3>Test de xxxxxxxxxxxxxxxxx : </h3>";
 // A CONTINUER .........
+// test de la méthode getToutesLesTraces ----------------------------------------------------------
+// modifié par dP le 14/8/2021
+echo "<h3>Test de getToutesLesTraces : </h3>";
+$lesTraces = $dao->getToutesLesTraces();
+$nbReponses = sizeof($lesTraces);
+echo "<p>Nombre de traces : " . $nbReponses . "</p>";
+// affichage des traces
+foreach ($lesTraces as $uneTrace)
+{ echo ($uneTrace->toString());
+ echo ('<br>');
+}
 
 
 

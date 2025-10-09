@@ -349,27 +349,27 @@ class DAO
     // début de la zone attribuée au développeur 1 (Pierre Renard) : lignes 350 à 549
     // --------------------------------------------------------------------------------------
     
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    public function existeAdrMailUtilisateur($adrMail)
+    {
+        // préparation de la requête de recherche
+        $txt_req = "Select count(*) from tracegps_utilisateurs where adrMail = :adrMail";
+        $req = $this->cnx->prepare($txt_req);
+        // liaison de la requête et de ses paramètres
+        $req->bindValue("adrMail", $adrMail, PDO::PARAM_STR);
+        // exécution de la requête
+        $req->execute();
+        $nbReponses = $req->fetchColumn(0);
+        // libère les ressources du jeu de données
+        $req->closeCursor();
+        
+        // fourniture de la réponse
+        if ($nbReponses == 0) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
     
     
     
@@ -949,7 +949,10 @@ class DAO
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 4 (François Grondin) : lignes 950 à 1150
     // --------------------------------------------------------------------------------------
+    public function getToutesLesTraces()
+    {
     
+    }
     
     
     
