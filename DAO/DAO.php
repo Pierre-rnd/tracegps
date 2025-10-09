@@ -1062,9 +1062,8 @@ public function getLesTraces($idUtilisateur)
     $req->closeCursor();
     return $lesTraces;
 }
-    
-    
-    
+
+
     
     
     
