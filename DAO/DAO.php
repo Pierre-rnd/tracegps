@@ -37,11 +37,11 @@
 
 
 // certaines méthodes nécessitent les classes suivantes :
-include_once ('Utilisateur.php');
-include_once ('Trace.php');
-include_once ('PointDeTrace.php');
-include_once ('Point.php');
-include_once ('Outils.php');
+include_once (__DIR__ . '/../modele/Utilisateur.php');
+include_once (__DIR__ . '/../modele/Trace.php');
+include_once (__DIR__ . '/../modele/PointDeTrace.php');
+include_once (__DIR__ . '/../modele/Point.php');
+include_once (__DIR__ . '/../modele/Outils.php');
 
 // inclusion des paramètres de l'application
 include_once ('parametres.php');
@@ -160,15 +160,15 @@ class DAO
         }
         else {
             // création d'un objet Utilisateur
-            $unId = utf8_encode($uneLigne->id);
-            $unPseudo = utf8_encode($uneLigne->pseudo);
-            $unMdpSha1 = utf8_encode($uneLigne->mdpSha1);
-            $uneAdrMail = utf8_encode($uneLigne->adrMail);
-            $unNumTel = utf8_encode($uneLigne->numTel);
-            $unNiveau = utf8_encode($uneLigne->niveau);
-            $uneDateCreation = utf8_encode($uneLigne->dateCreation);
-            $unNbTraces = utf8_encode($uneLigne->nbTraces);
-            $uneDateDerniereTrace = utf8_encode($uneLigne->dateDerniereTrace);
+            $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
+            $unPseudo = mb_convert_encoding($uneLigne->pseudo, 'UTF-8', 'ISO-8859-1');
+            $unMdpSha1 = mb_convert_encoding($uneLigne->mdpSha1, 'UTF-8', 'ISO-8859-1');
+            $uneAdrMail = mb_convert_encoding($uneLigne->adrMail, 'UTF-8', 'ISO-8859-1');
+            $unNumTel = mb_convert_encoding($uneLigne->numTel, 'UTF-8', 'ISO-8859-1');
+            $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
+            $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
+            $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
+            $uneDateDerniereTrace = mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1');
             
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             return $unUtilisateur;
@@ -196,15 +196,15 @@ class DAO
         // tant qu'une ligne est trouvée :
         while ($uneLigne) {
             // création d'un objet Utilisateur
-            $unId = utf8_encode($uneLigne->id);
-            $unPseudo = utf8_encode($uneLigne->pseudo);
-            $unMdpSha1 = utf8_encode($uneLigne->mdpSha1);
-            $uneAdrMail = utf8_encode($uneLigne->adrMail);
-            $unNumTel = utf8_encode($uneLigne->numTel);
-            $unNiveau = utf8_encode($uneLigne->niveau);
-            $uneDateCreation = utf8_encode($uneLigne->dateCreation);
-            $unNbTraces = utf8_encode($uneLigne->nbTraces);
-            $uneDateDerniereTrace = utf8_encode($uneLigne->dateDerniereTrace);
+            $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
+            $unPseudo = mb_convert_encoding($uneLigne->pseudo, 'UTF-8', 'ISO-8859-1');
+            $unMdpSha1 = mb_convert_encoding($uneLigne->mdpSha1, 'UTF-8', 'ISO-8859-1');
+            $uneAdrMail = mb_convert_encoding($uneLigne->adrMail, 'UTF-8', 'ISO-8859-1');
+            $unNumTel = mb_convert_encoding($uneLigne->numTel, 'UTF-8', 'ISO-8859-1');
+            $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
+            $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
+            $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
+            $uneDateDerniereTrace = mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1');
             
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             // ajout de l'utilisateur à la collection
@@ -232,12 +232,12 @@ class DAO
         $txt_req1 .= " values (:pseudo, :mdpSha1, :adrMail, :numTel, :niveau, :dateCreation)";
         $req1 = $this->cnx->prepare($txt_req1);
         // liaison de la requête et de ses paramètres
-        $req1->bindValue("pseudo", utf8_decode($unUtilisateur->getPseudo()), PDO::PARAM_STR);
-        $req1->bindValue("mdpSha1", utf8_decode(sha1($unUtilisateur->getMdpsha1())), PDO::PARAM_STR);
-        $req1->bindValue("adrMail", utf8_decode($unUtilisateur->getAdrmail()), PDO::PARAM_STR);
-        $req1->bindValue("numTel", utf8_decode($unUtilisateur->getNumTel()), PDO::PARAM_STR);
-        $req1->bindValue("niveau", utf8_decode($unUtilisateur->getNiveau()), PDO::PARAM_INT);
-        $req1->bindValue("dateCreation", utf8_decode($unUtilisateur->getDateCreation()), PDO::PARAM_STR);
+        $req1->bindValue("pseudo", mb_convert_encoding($unUtilisateur->getPseudo(), 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
+        $req1->bindValue("mdpSha1", mb_convert_encoding(sha1($unUtilisateur->getMdpsha1()), 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
+        $req1->bindValue("adrMail", mb_convert_encoding($unUtilisateur->getAdrmail(), 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
+        $req1->bindValue("numTel", mb_convert_encoding($unUtilisateur->getNumTel(), 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
+        $req1->bindValue("niveau", mb_convert_encoding($unUtilisateur->getNiveau(), 'UTF-8', 'ISO-8859-1'), PDO::PARAM_INT);
+        $req1->bindValue("dateCreation", mb_convert_encoding($unUtilisateur->getDateCreation(), 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
         // exécution de la requête
         $ok = $req1->execute();
         // sortir en cas d'échec
@@ -291,7 +291,7 @@ class DAO
             $txt_req1 .= " where idAutorisant = :idUtilisateur or idAutorise = :idUtilisateur";
             $req1 = $this->cnx->prepare($txt_req1);
             // liaison de la requête et de ses paramètres
-            $req1->bindValue("idUtilisateur", utf8_decode($idUtilisateur), PDO::PARAM_INT);
+            $req1->bindValue("idUtilisateur", mb_convert_encoding($idUtilisateur, 'UTF-8', 'ISO-8859-1'), PDO::PARAM_INT);
             // exécution de la requête
             $ok = $req1->execute();
             
@@ -300,7 +300,7 @@ class DAO
             $txt_req2 .= " where pseudo = :pseudo";
             $req2 = $this->cnx->prepare($txt_req2);
             // liaison de la requête et de ses paramètres
-            $req2->bindValue("pseudo", utf8_decode($pseudo), PDO::PARAM_STR);
+            $req2->bindValue("pseudo", mb_convert_encoding($pseudo, 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
             // exécution de la requête
             $ok = $req2->execute();
             return $ok;
@@ -346,9 +346,369 @@ class DAO
     
     
     // --------------------------------------------------------------------------------------
-    // début de la zone attribuée au développeur 1 (xxxxxxxxxxxxxxxxxxxx) : lignes 350 à 549
+    // début de la zone attribuée au développeur 1 (Pierre Renard) : lignes 350 à 549
     // --------------------------------------------------------------------------------------
     
+    public function existeAdrMailUtilisateur($adrMail)
+    {
+        // préparation de la requête de recherche
+        $txt_req = "Select count(*) from tracegps_utilisateurs where adrMail = :adrMail";
+        $req = $this->cnx->prepare($txt_req);
+        // liaison de la requête et de ses paramètres
+        $req->bindValue("adrMail", $adrMail, PDO::PARAM_STR);
+        // exécution de la requête
+        $req->execute();
+        $nbReponses = $req->fetchColumn(0);
+        // libère les ressources du jeu de données
+        $req->closeCursor();
+        
+        // fourniture de la réponse
+        if ($nbReponses == 0) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // --------------------------------------------------------------------------------------
+    // début de la zone attribuée au développeur 2 (Johann Lucas) : lignes 550 à 749
+    // --------------------------------------------------------------------------------------
+    public function getLesPointsDeTrace($idTrace) {
+        $txt_req = "Select idTrace, id, latitude, longitude, altitude, dateHeure, rythmeCardio
+                    from tracegps_points
+                    where idTrace = :idTrace
+                    order by dateHeure";
+
+        $req = $this->cnx->prepare($txt_req);
+        $req->bindValue("idTrace", $idTrace, PDO::PARAM_INT);
+        $req->execute();
+
+        $lesPoints = array();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+
+        while ($uneLigne) {
+            $unIdTrace = $uneLigne->idTrace;
+            $unId = $uneLigne->id;
+            $uneLatitude = $uneLigne->latitude;
+            $uneLongitude = $uneLigne->longitude;
+            $uneAltitude = $uneLigne->altitude;
+            $uneDateHeure = $uneLigne->dateHeure;
+            $unRythmeCardio = $uneLigne->rythmeCardio;
+
+            // Variables calculées ou initialisées à 0
+            $unTempsCumule = 0;
+            $uneDistanceCumulee = 0;
+            $uneVitesse = 0;
+
+            $unPoint = new PointDeTrace(
+                $unIdTrace,
+                $unId,
+                $uneLatitude,
+                $uneLongitude,
+                $uneAltitude,
+                $uneDateHeure,
+                $unRythmeCardio,
+                $unTempsCumule,
+                $uneDistanceCumulee,
+                $uneVitesse
+            );
+
+            $lesPoints[] = $unPoint;
+            $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        }
+
+        $req->closeCursor();
+        return $lesPoints;
+    }
+
+    public function creerUnPointDeTrace($unPointDeTrace) {
+        // Préparation de la requête d'insertion dans la table tracegps_points
+        $txt_req = "INSERT INTO tracegps_points 
+                    (idTrace, id, latitude, longitude, altitude, dateHeure, rythmeCardio) 
+                    VALUES (:idTrace, :id, :latitude, :longitude, :altitude, :dateHeure, :rythmeCardio)";
+        $req = $this->cnx->prepare($txt_req);
+
+        // Liaison des paramètres
+        $req->bindValue("idTrace", $unPointDeTrace->getIdTrace(), PDO::PARAM_INT);
+        $req->bindValue("id", $unPointDeTrace->getId(), PDO::PARAM_INT);
+        $req->bindValue("latitude", $unPointDeTrace->getLatitude(), PDO::PARAM_STR);
+        $req->bindValue("longitude", $unPointDeTrace->getLongitude(), PDO::PARAM_STR);
+        $req->bindValue("altitude", $unPointDeTrace->getAltitude(), PDO::PARAM_STR);
+        $req->bindValue("dateHeure", $unPointDeTrace->getDateHeure(), PDO::PARAM_STR);
+        $req->bindValue("rythmeCardio", $unPointDeTrace->getRythmeCardio(), PDO::PARAM_INT);
+
+        // Exécution de l'insertion
+        $ok = $req->execute();
+        $req->closeCursor();
+
+        if (! $ok) {
+            return false;
+        }
+
+        // Si c’est le premier point de la trace, on met à jour la dateDebut de la trace
+        if ($unPointDeTrace->getId() == 1) {
+            $txt_req2 = "UPDATE tracegps_traces 
+                        SET dateDebut = :dateHeure 
+                        WHERE id = :id";
+            $req2 = $this->cnx->prepare($txt_req2);
+            $req2->bindValue("dateHeure", $unPointDeTrace->getDateHeure(), PDO::PARAM_STR);
+            $req2->bindValue("id", $unPointDeTrace->getId(), PDO::PARAM_INT);
+            $ok2 = $req2->execute();
+            $req2->closeCursor();
+
+            if (! $ok2) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function getUneTrace($idTrace) {
+        $txt_req = "SELECT id, dateDebut, dateFin, terminee, idUtilisateur
+                    FROM tracegps_traces
+                    WHERE id = :idTrace";
+
+        $req = $this->cnx->prepare($txt_req);
+        $req->bindValue("idTrace", $idTrace, PDO::PARAM_INT);
+        $req->execute();
+
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        $req->closeCursor();
+
+        if (! $uneLigne) {
+            return null;
+        }
+
+        $unId = $uneLigne->id;
+        $uneDateDebut = $uneLigne->dateDebut;
+        $uneDateFin = $uneLigne->dateFin;
+        $estTerminee = $uneLigne->terminee;
+        $unIdUtilisateur = $uneLigne->idUtilisateur;
+
+        $uneTrace = new Trace(
+            $unId,
+            $uneDateDebut,
+            $uneDateFin,
+            $estTerminee,
+            $unIdUtilisateur
+        );
+
+        $lesPoints = $this->getLesPointsDeTrace($idTrace);
+
+        foreach ($lesPoints as $unPoint) {
+            $uneTrace->ajouterPoint($unPoint);
+        }
+
+        return $uneTrace;
+    }
+
+    public function terminerUneTrace($idTrace) {
+        $lesPoints = $this->getLesPointsDeTrace($idTrace);
+
+        if (count($lesPoints) > 0) {
+            $dernierPoint = $lesPoints[count($lesPoints) - 1];
+            $dateFin = $dernierPoint->getDateHeure();
+        } else {
+            $dateFin = date('Y-m-d H:i:s');
+        }
+
+        $txt_req = "UPDATE tracegps_traces
+                    SET dateFin = :dateFin, terminee = 1
+                    WHERE id = :idTrace";
+
+        $req = $this->cnx->prepare($txt_req);
+
+        $req->bindValue("dateFin", $dateFin, PDO::PARAM_STR);
+        $req->bindValue("idTrace", $idTrace, PDO::PARAM_INT);
+
+        $ok = $req->execute();
+        $req->closeCursor();
+
+        return $ok;
+    }
+
+
+
+
+
+
 
     
     
@@ -385,368 +745,8 @@ class DAO
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     // --------------------------------------------------------------------------------------
-    // début de la zone attribuée au développeur 2 (xxxxxxxxxxxxxxxxxxxx) : lignes 550 à 749
-    // --------------------------------------------------------------------------------------
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    // --------------------------------------------------------------------------------------
-    // début de la zone attribuée au développeur 3 (xxxxxxxxxxxxxxxxxxxx) : lignes 750 à 949
+    // début de la zone attribuée au développeur 3 (Matheo Guiboux) : lignes 750 à 949
     // --------------------------------------------------------------------------------------
     
     
@@ -946,9 +946,12 @@ class DAO
     
    
     // --------------------------------------------------------------------------------------
-    // début de la zone attribuée au développeur 4 (xxxxxxxxxxxxxxxxxxxx) : lignes 950 à 1150
+    // début de la zone attribuée au développeur 4 (François Grondin) : lignes 950 à 1150
     // --------------------------------------------------------------------------------------
+    public function getToutesLesTraces()
+    {
     
+    }
     
     
     
