@@ -408,7 +408,45 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
         return $lesUtilisateurs;
     }
     
-    
+    public function getLesUtilisateursAutorisant($idUtilisateur)
+    {
+        $txt_req = "Select u.id, u.pseudo, u.mdpSha1, u.adrMail, u.numTel, u.niveau, 
+                       u.dateCreation, u.nbTraces, u.dateDerniereTrace
+                from tracegps_vue_utilisateurs u
+                join tracegps_autorisations a on a.idAutorise = u.id
+                where a.idAutorisant = :idUtilisateur
+                and u.niveau = 1
+                order by u.pseudo";
+
+        $req = $this->cnx->prepare($txt_req);
+        $req->bindValue("idUtilisateur", mb_convert_encoding($idUtilisateur, 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
+        $req->execute();
+
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        $lesUtilisateurs = array();
+
+        // tant qu'une ligne est trouvée :
+        while ($uneLigne) {
+            // création d'un objet Utilisateur
+            $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
+            $unPseudo = mb_convert_encoding($uneLigne->pseudo, 'UTF-8', 'ISO-8859-1');
+            $unMdpSha1 = mb_convert_encoding($uneLigne->mdpSha1, 'UTF-8', 'ISO-8859-1');
+            $uneAdrMail = mb_convert_encoding($uneLigne->adrMail, 'UTF-8', 'ISO-8859-1');
+            $unNumTel = mb_convert_encoding($uneLigne->numTel, 'UTF-8', 'ISO-8859-1');
+            $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
+            $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
+            $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
+            $uneDateDerniereTrace = mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1');            
+            $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
+            // ajout de l'utilisateur à la collection
+            $lesUtilisateurs[] = $unUtilisateur;
+            // extrait la ligne suivante
+            $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        }
+
+        $req->closeCursor();
+        return $lesUtilisateurs;
+    }
     
     
     
