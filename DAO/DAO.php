@@ -37,11 +37,11 @@
 
 
 // certaines méthodes nécessitent les classes suivantes :
-include_once ('Utilisateur.php');
-include_once ('Trace.php');
-include_once ('PointDeTrace.php');
-include_once ('Point.php');
-include_once ('Outils.php');
+include_once (__DIR__ . '/../modele/Utilisateur.php');
+include_once (__DIR__ . '/../modele/Trace.php');
+include_once (__DIR__ . '/../modele/PointDeTrace.php');
+include_once (__DIR__ . '/../modele/Point.php');
+include_once (__DIR__ . '/../modele/Outils.php');
 
 // inclusion des paramètres de l'application
 include_once ('parametres.php');
@@ -232,12 +232,12 @@ class DAO
         $txt_req1 .= " values (:pseudo, :mdpSha1, :adrMail, :numTel, :niveau, :dateCreation)";
         $req1 = $this->cnx->prepare($txt_req1);
         // liaison de la requête et de ses paramètres
-        $req1->bindValue("pseudo", utf8_decode($unUtilisateur->getPseudo()), PDO::PARAM_STR);
-        $req1->bindValue("mdpSha1", utf8_decode(sha1($unUtilisateur->getMdpsha1())), PDO::PARAM_STR);
-        $req1->bindValue("adrMail", utf8_decode($unUtilisateur->getAdrmail()), PDO::PARAM_STR);
-        $req1->bindValue("numTel", utf8_decode($unUtilisateur->getNumTel()), PDO::PARAM_STR);
-        $req1->bindValue("niveau", utf8_decode($unUtilisateur->getNiveau()), PDO::PARAM_INT);
-        $req1->bindValue("dateCreation", utf8_decode($unUtilisateur->getDateCreation()), PDO::PARAM_STR);
+        $req1->bindValue("pseudo", mb_convert_encoding($unUtilisateur->getPseudo(), 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
+        $req1->bindValue("mdpSha1", mb_convert_encoding(sha1($unUtilisateur->getMdpsha1()), 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
+        $req1->bindValue("adrMail", mb_convert_encoding($unUtilisateur->getAdrmail(), 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
+        $req1->bindValue("numTel", mb_convert_encoding($unUtilisateur->getNumTel(), 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
+        $req1->bindValue("niveau", mb_convert_encoding($unUtilisateur->getNiveau(), 'UTF-8', 'ISO-8859-1'), PDO::PARAM_INT);
+        $req1->bindValue("dateCreation", mb_convert_encoding($unUtilisateur->getDateCreation(), 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
         // exécution de la requête
         $ok = $req1->execute();
         // sortir en cas d'échec
@@ -291,7 +291,7 @@ class DAO
             $txt_req1 .= " where idAutorisant = :idUtilisateur or idAutorise = :idUtilisateur";
             $req1 = $this->cnx->prepare($txt_req1);
             // liaison de la requête et de ses paramètres
-            $req1->bindValue("idUtilisateur", utf8_decode($idUtilisateur), PDO::PARAM_INT);
+            $req1->bindValue("idUtilisateur", mb_convert_encoding($idUtilisateur, 'UTF-8', 'ISO-8859-1'), PDO::PARAM_INT);
             // exécution de la requête
             $ok = $req1->execute();
             
@@ -300,7 +300,7 @@ class DAO
             $txt_req2 .= " where pseudo = :pseudo";
             $req2 = $this->cnx->prepare($txt_req2);
             // liaison de la requête et de ses paramètres
-            $req2->bindValue("pseudo", utf8_decode($pseudo), PDO::PARAM_STR);
+            $req2->bindValue("pseudo", mb_convert_encoding($pseudo, 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
             // exécution de la requête
             $ok = $req2->execute();
             return $ok;
@@ -548,56 +548,56 @@ class DAO
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 2 (Johann Lucas) : lignes 550 à 749
     // --------------------------------------------------------------------------------------
-    public function getLesPointsDeTrace($idTrace)
-    {
+    public function getLesPointsDeTrace($idTrace) {
+        $txt_req = "Select idTrace, id, latitude, longitude, altitude, dateHeure, rythmeCardio
+                    from tracegps_points
+                    where idTrace = :idTrace
+                    order by dateHeure";
+
+        $req = $this->cnx->prepare($txt_req);
+        $req->bindValue("idTrace", $idTrace, PDO::PARAM_INT);
+        $req->execute();
+
         $lesPoints = array();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
 
-        // Préparation de la requête SQL
-        $req = "SELECT idTrace, id, latitude, longitude, altitude, dateHeure, rythmeCardio
-                FROM pointstraces
-                WHERE idTrace = :idTrace
-                ORDER BY idTrace ASC";
+        while ($uneLigne) {
+            $unIdTrace = $uneLigne->idTrace;
+            $unId = $uneLigne->id;
+            $uneLatitude = $uneLigne->latitude;
+            $uneLongitude = $uneLigne->longitude;
+            $uneAltitude = $uneLigne->altitude;
+            $uneDateHeure = $uneLigne->dateHeure;
+            $unRythmeCardio = $uneLigne->rythmeCardio;
 
-        $stmt = $this->cnx->prepare($req);
-        $stmt->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
-        $stmt->execute();
+            // Variables calculées ou initialisées à 0
+            $unTempsCumule = 0;
+            $uneDistanceCumulee = 0;
+            $uneVitesse = 0;
 
-        // Parcours des enregistrements retournés
-        $ligne = $stmt->fetch(PDO::FETCH_ASSOC);
-        while ($ligne) {
-            // Création d’un objet PointDeTrace
             $unPoint = new PointDeTrace(
-                $ligne["idTrace"],
-                $ligne["id"],
-                $ligne["latitude"],
-                $ligne["longitude"],
-                $ligne["altitude"],
-                $ligne["dateHeure"],
-                $ligne["rythmeCardio"]
+                $unIdTrace,
+                $unId,
+                $uneLatitude,
+                $uneLongitude,
+                $uneAltitude,
+                $uneDateHeure,
+                $unRythmeCardio,
+                $unTempsCumule,
+                $uneDistanceCumulee,
+                $uneVitesse
             );
 
-            // Ajout à la collection
             $lesPoints[] = $unPoint;
-
-            $ligne = $stmt->fetch(PDO::FETCH_ASSOC);
+            $uneLigne = $req->fetch(PDO::FETCH_OBJ);
         }
 
-        $stmt->closeCursor();
-
+        $req->closeCursor();
         return $lesPoints;
     }
 
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     
     
     
