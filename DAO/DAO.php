@@ -949,15 +949,38 @@ class DAO
     // début de la zone attribuée au développeur 4 (François Grondin) : lignes 950 à 1150
     // --------------------------------------------------------------------------------------
     public function getToutesLesTraces()
-    {
-        $allLesPointsTraces = getLesPointsDeTrace($idTrace)
+{
+    $lesTraces = array();
+ 
+    
+    $sql = "SELECT * FROM tracegps_traces ORDER BY id DESC;";
+    $req = $this->cnx->prepare($sql);
+    $req->execute();
+    $lesLignes = $req->fetchAll(PDO::FETCH_ASSOC);
+ 
+    foreach ($lesLignes as $ligne) {
+        $idTrace = $ligne['id'];
+        $dateHeureDebut = $ligne['dateHeureDebut'];
+        $dateHeureFin = $ligne['dateHeureFin'];
+        $terminee = $ligne['terminee'];
+        $idUtilisateur = $ligne['idUtilisateur'];
+ 
+       
+        $uneTrace = new Trace($idTrace, $dateHeureDebut, $dateHeureFin, $terminee, $idUtilisateur);
+ 
         
-        for ($i=0; $i> sizeof($allLesPointsTraces); $allLesPointsTraces[$i++] )
-        {
-           
+        $lesPoints = $this->getLesPointsDeTrace($idTrace);
+        foreach ($lesPoints as $unPoint) {
+            $uneTrace->ajouterPoint($unPoint);
         }
-        return $allLesPointsTraces;
+ 
+        
+        $lesTraces[] = $uneTrace;
     }
+ 
+    $req->closeCursor();
+    return $lesTraces;
+}
     
     
     
