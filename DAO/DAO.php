@@ -596,6 +596,55 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
         return $lesPoints;
     }
 
+    public function creerUnPointDeTrace($unPointDeTrace) {
+        // Préparation de la requête d'insertion dans la table tracegps_points
+        $txt_req = "INSERT INTO tracegps_points 
+                    (idTrace, id, latitude, longitude, altitude, dateHeure, rythmeCardio) 
+                    VALUES (:idTrace, :id, :latitude, :longitude, :altitude, :dateHeure, :rythmeCardio)";
+        $req = $this->cnx->prepare($txt_req);
+
+        // Liaison des paramètres
+        $req->bindValue("idTrace", $unPointDeTrace->getIdTrace(), PDO::PARAM_INT);
+        $req->bindValue("id", $unPointDeTrace->getId(), PDO::PARAM_INT);
+        $req->bindValue("latitude", $unPointDeTrace->getLatitude(), PDO::PARAM_STR);
+        $req->bindValue("longitude", $unPointDeTrace->getLongitude(), PDO::PARAM_STR);
+        $req->bindValue("altitude", $unPointDeTrace->getAltitude(), PDO::PARAM_STR);
+        $req->bindValue("dateHeure", $unPointDeTrace->getDateHeure(), PDO::PARAM_STR);
+        $req->bindValue("rythmeCardio", $unPointDeTrace->getRythmeCardio(), PDO::PARAM_INT);
+
+        // Exécution de l'insertion
+        $ok = $req->execute();
+        $req->closeCursor();
+
+        if (! $ok) {
+            return false;
+        }
+
+        // Si c’est le premier point de la trace, on met à jour la dateDebut de la trace
+        if ($unPointDeTrace->getId() == 1) {
+            $txt_req2 = "UPDATE tracegps_traces 
+                        SET dateDebut = :dateHeure 
+                        WHERE id = :id";
+            $req2 = $this->cnx->prepare($txt_req2);
+            $req2->bindValue("dateHeure", $unPointDeTrace->getDateHeure(), PDO::PARAM_STR);
+            $req2->bindValue("id", $unPointDeTrace->getId(), PDO::PARAM_INT);
+            $ok2 = $req2->execute();
+            $req2->closeCursor();
+
+            if (! $ok2) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+
+
+
+
+
 
 
     
