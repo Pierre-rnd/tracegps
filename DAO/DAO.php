@@ -371,26 +371,10 @@ class DAO
         }
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    public function getLesUtilisateursAutorisant($idUtilisateur)
+    {
+        
+    }
     
     
     
