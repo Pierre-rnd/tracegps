@@ -37,11 +37,11 @@
 
 
 // certaines méthodes nécessitent les classes suivantes :
-include_once (__DIR__ . '/../modele/Utilisateur.php');
-include_once (__DIR__ . '/../modele/Trace.php');
-include_once (__DIR__ . '/../modele/PointDeTrace.php');
-include_once (__DIR__ . '/../modele/Point.php');
-include_once (__DIR__ . '/../modele/Outils.php');
+include_once ('Utilisateur.php');
+include_once ('Trace.php');
+include_once ('PointDeTrace.php');
+include_once ('Point.php');
+include_once ('Outils.php');
 
 // inclusion des paramètres de l'application
 include_once ('parametres.php');
