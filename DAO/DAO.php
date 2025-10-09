@@ -1066,29 +1066,29 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
         return $lesTraces;
     }
 
-public function creerUneTrace($uneTrace)
-{
-    $ok = false;
+    public function creerUneTrace($uneTrace)
+    {
+        $ok = false;
 
-    $sql = "INSERT INTO tracegps_traces (dateDebut, dateFin, terminee, idUtilisateur)
-            VALUES (:dateDebut, :dateFin, :terminee, :idUtilisateur);";
-    $req = $this->cnx->prepare($sql);
+        $sql = "INSERT INTO tracegps_traces (dateDebut, dateFin, terminee, idUtilisateur)
+                VALUES (:dateDebut, :dateFin, :terminee, :idUtilisateur);";
+        $req = $this->cnx->prepare($sql);
 
-    $req->bindValue(":dateDebut", $uneTrace->getDateHeureDebut(), PDO::PARAM_STR);
+        $req->bindValue(":dateDebut", $uneTrace->getDateHeureDebut(), PDO::PARAM_STR);
 
-    if ($uneTrace->getDateHeureFin() == null)
-        $req->bindValue(":dateFin", null, PDO::PARAM_NULL);
-    else
-        $req->bindValue(":dateFin", $uneTrace->getDateHeureFin(), PDO::PARAM_STR);
+        if ($uneTrace->getDateHeureFin() == null)
+            $req->bindValue(":dateFin", null, PDO::PARAM_NULL);
+        else
+            $req->bindValue(":dateFin", $uneTrace->getDateHeureFin(), PDO::PARAM_STR);
 
-    $req->bindValue(":terminee", $uneTrace->getTerminee(), PDO::PARAM_BOOL);
-    $req->bindValue(":idUtilisateur", $uneTrace->getIdUtilisateur(), PDO::PARAM_INT);
+        $req->bindValue(":terminee", $uneTrace->getTerminee(), PDO::PARAM_BOOL);
+        $req->bindValue(":idUtilisateur", $uneTrace->getIdUtilisateur(), PDO::PARAM_INT);
 
-    $ok = $req->execute();
+        $ok = $req->execute();
 
-    $req->closeCursor();
-    return $ok;
-}
+        $req->closeCursor();
+        return $ok;
+    }
 
 
     
