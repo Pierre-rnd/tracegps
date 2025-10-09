@@ -31,14 +31,10 @@ include_once ('DAO.php');
 $dao = new DAO();
 
 
-// test de la méthode existeAdrMailUtilisateur ----------------------------------------------------
-// modifié par dP le 12/8/2021
-echo "<h3>Test de existeAdrMailUtilisateur : </h3>";
-if ($dao->existeAdrMailUtilisateur("admin@gmail.com")) $existe = "oui"; else $existe = "non";
-echo "<p>Existence de l'utilisateur 'admin@gmail.com' : <b>" . $existe . "</b><br>";
-if ($dao->existeAdrMailUtilisateur("delasalle.sio.eleves@gmail.com")) $existe = "oui"; else $existe = "non";
-echo "Existence de l'utilisateur 'delasalle.sio.eleves@gmail.com' : <b>" . $existe . "</b></br>";
-
+// test de la méthode xxxxxxxxxxxxxxxxxxxxxxxxxxx ----------------------------------------------------------
+// modifié par xxxxxxxxxxxxxxxxx le xxxxxxxxxx
+echo "<h3>Test de xxxxxxxxxxxxxxxxx : </h3>";
+// A CONTINUER .........
 
 
 
