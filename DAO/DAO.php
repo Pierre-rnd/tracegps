@@ -1000,68 +1000,71 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
     // --------------------------------------------------------------------------------------
     public function getToutesLesTraces()
     {
-    $lesTraces = array();
- 
+        $lesTraces = array();
     
-    $sql = "SELECT * FROM tracegps_traces ORDER BY id DESC;";
-    $req = $this->cnx->prepare($sql);
-    $req->execute();
-    $lesLignes = $req->fetchAll(PDO::FETCH_ASSOC);
- 
-    foreach ($lesLignes as $ligne) {
-        $idTrace = $ligne['id'];
-        $dateHeureDebut = isset($ligne['dateHeureDebut']) ? $ligne['dateHeureDebut'] : $ligne['dateDebut'];
-        $dateHeureFin   = isset($ligne['dateHeureFin']) ? $ligne['dateHeureFin'] : $ligne['dateFin'];
-        $terminee = $ligne['terminee'];
-        $idUtilisateur = $ligne['idUtilisateur'];
- 
-       
-        $uneTrace = new Trace($idTrace, $dateHeureDebut, $dateHeureFin, $terminee, $idUtilisateur);
- 
         
-        $lesPoints = $this->getLesPointsDeTrace($idTrace);
-        foreach ($lesPoints as $unPoint) {
-            $uneTrace->ajouterPoint($unPoint);
-        }
- 
+        $sql = "SELECT * FROM tracegps_traces ORDER BY id DESC;";
+        $req = $this->cnx->prepare($sql);
+        $req->execute();
+        $lesLignes = $req->fetchAll(PDO::FETCH_ASSOC);
+    
+        foreach ($lesLignes as $ligne) 
+            {
+                $idTrace = $ligne['id'];
+                $dateHeureDebut = isset($ligne['dateHeureDebut']) ? $ligne['dateHeureDebut'] : $ligne['dateDebut'];
+                $dateHeureFin   = isset($ligne['dateHeureFin']) ? $ligne['dateHeureFin'] : $ligne['dateFin'];
+                $terminee = $ligne['terminee'];
+                $idUtilisateur = $ligne['idUtilisateur'];
         
-        $lesTraces[] = $uneTrace;
-    }
+            
+                $uneTrace = new Trace($idTrace, $dateHeureDebut, $dateHeureFin, $terminee, $idUtilisateur);
+        
+                
+                $lesPoints = $this->getLesPointsDeTrace($idTrace);
+                foreach ($lesPoints as $unPoint) 
+                    {
+                        $uneTrace->ajouterPoint($unPoint);
+                    }
+        
+                
+                $lesTraces[] = $uneTrace;
+            }
  
-    $req->closeCursor();
-    return $lesTraces;
-}
-
-public function getLesTraces($idUtilisateur)
-{
-    $lesTraces = array();
-
-    $sql = "SELECT * FROM tracegps_traces
-            WHERE idUtilisateur = :idUtilisateur
-            ORDER BY id DESC;";
-    $req = $this->cnx->prepare($sql);
-    $req->bindValue(":idUtilisateur", $idUtilisateur, PDO::PARAM_INT);
-    $req->execute();
-    $lesLignes = $req->fetchAll(PDO::FETCH_ASSOC);
-
-    foreach ($lesLignes as $ligne) {
-        $idTrace = $ligne['id'];
-        $dateHeureDebut = $ligne['dateHeureDebut'] ?? $ligne['dateDebut'] ?? null;
-        $dateHeureFin   = $ligne['dateHeureFin'] ?? $ligne['dateFin'] ?? null;
-        $terminee = $ligne['terminee'];
-        $uneTrace = new Trace($idTrace, $dateHeureDebut, $dateHeureFin, $terminee, $idUtilisateur);
-
-        $lesPoints = $this->getLesPointsDeTrace($idTrace);
-        foreach ($lesPoints as $unPoint) {
-            $uneTrace->ajouterPoint($unPoint);
-        }
-
-        $lesTraces[] = $uneTrace;
+        $req->closeCursor();
+        return $lesTraces;
     }
 
-    $req->closeCursor();
-    return $lesTraces;
-}
+    public function getLesTraces($idUtilisateur)
+    {
+        $lesTraces = array();
+
+        $sql = "SELECT * FROM tracegps_traces
+                WHERE idUtilisateur = :idUtilisateur
+                ORDER BY id DESC;";
+        $req = $this->cnx->prepare($sql);
+        $req->bindValue(":idUtilisateur", $idUtilisateur, PDO::PARAM_INT);
+        $req->execute();
+        $lesLignes = $req->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($lesLignes as $ligne) 
+            {
+                $idTrace = $ligne['id'];
+                $dateHeureDebut = $ligne['dateHeureDebut'] ?? $ligne['dateDebut'] ?? null;
+                $dateHeureFin   = $ligne['dateHeureFin'] ?? $ligne['dateFin'] ?? null;
+                $terminee = $ligne['terminee'];
+                $uneTrace = new Trace($idTrace, $dateHeureDebut, $dateHeureFin, $terminee, $idUtilisateur);
+
+                $lesPoints = $this->getLesPointsDeTrace($idTrace);
+                foreach ($lesPoints as $unPoint) 
+                    {
+                        $uneTrace->ajouterPoint($unPoint);
+                    }
+
+                $lesTraces[] = $uneTrace;
+            }
+        $req->closeCursor();
+        return $lesTraces;
+    }
 
 public function creerUneTrace($uneTrace)
 {
