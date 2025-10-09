@@ -1067,55 +1067,55 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
     }
 
 
-public function creerUneTrace($uneTrace)
-{
-    $sql = "INSERT INTO tracegps_traces (id, dateDebut, dateFin, terminee, idUtilisateur) ";
-    $sql.= " VALUES (:id, :dateDebut, :dateFin, :terminee, :idUtilisateur);";
+    public function creerUneTrace($uneTrace)
+    {
+        $sql = "INSERT INTO tracegps_traces (id, dateDebut, dateFin, terminee, idUtilisateur) ";
+        $sql.= " VALUES (:id, :dateDebut, :dateFin, :terminee, :idUtilisateur);";
 
-    $req = $this->cnx->prepare($sql);
-    $req->bindValue(":id", $uneTrace->getId(), PDO::PARAM_INT);
-    $req->bindValue(":dateDebut", $uneTrace->getDateHeureDebut(), PDO::PARAM_STR);
-
-    if ($uneTrace->getDateHeureFin() == null)
-        $req->bindValue(":dateFin", null, PDO::PARAM_NULL);
-    else
-        $req->bindValue(":dateFin", $uneTrace->getDateHeureFin(), PDO::PARAM_STR);
-
-    $req->bindValue(":terminee", $uneTrace->getTerminee(), PDO::PARAM_BOOL);
-    $req->bindValue(":idUtilisateur", $uneTrace->getIdUtilisateur(), PDO::PARAM_INT);
-
-    $ok = $req->execute();
-
-    $req->closeCursor();
-    return $ok;
-}
-
-public function supprimerUneTrace($idTrace)
-{
-    $ok = false;
-
-    try {
-        
-        $sql = "DELETE FROM tracegps_points WHERE idTrace = :idTrace;";
         $req = $this->cnx->prepare($sql);
-        $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
-        $req->execute();
-        $req->closeCursor();
+        $req->bindValue(":id", $uneTrace->getId(), PDO::PARAM_INT);
+        $req->bindValue(":dateDebut", $uneTrace->getDateHeureDebut(), PDO::PARAM_STR);
 
-        
-        $sql = "DELETE FROM tracegps_traces WHERE id = :idTrace;";
-        $req = $this->cnx->prepare($sql);
-        $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
+        if ($uneTrace->getDateHeureFin() == null)
+            $req->bindValue(":dateFin", null, PDO::PARAM_NULL);
+        else
+            $req->bindValue(":dateFin", $uneTrace->getDateHeureFin(), PDO::PARAM_STR);
+
+        $req->bindValue(":terminee", $uneTrace->getTerminee(), PDO::PARAM_BOOL);
+        $req->bindValue(":idUtilisateur", $uneTrace->getIdUtilisateur(), PDO::PARAM_INT);
+
         $ok = $req->execute();
-        $req->closeCursor();
 
-    } catch (Exception $e) {
-        $ok = false;
+        $req->closeCursor();
+        return $ok;
     }
 
-    return $ok;
-}
-    
+    public function supprimerUneTrace($idTrace)
+    {
+        $ok = false;
+
+        try {
+            
+                $sql = "DELETE FROM tracegps_points WHERE idTrace = :idTrace;";
+                $req = $this->cnx->prepare($sql);
+                $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
+                $req->execute();
+                $req->closeCursor();
+
+                
+                $sql = "DELETE FROM tracegps_traces WHERE id = :idTrace;";
+                $req = $this->cnx->prepare($sql);
+                $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
+                $ok = $req->execute();
+                $req->closeCursor();
+            } 
+            catch (Exception $e) {
+                $ok = false;
+        }
+
+        return $ok;
+    }
+        
     
     
     
