@@ -37,11 +37,11 @@
 
 
 // certaines méthodes nécessitent les classes suivantes :
-include_once(__DIR__ . '/../modele/Utilisateur.php');
-include_once(__DIR__ . '/../modele/Trace.php');
-include_once(__DIR__ . '/../modele/PointDeTrace.php');
-include_once(__DIR__ . '/../modele/Point.php');
-include_once(__DIR__ . '/../modele/Outils.php');
+include_once (__DIR__ . '/../modele/Utilisateur.php');
+include_once (__DIR__ . '/../modele/Trace.php');
+include_once (__DIR__ . '/../modele/PointDeTrace.php');
+include_once (__DIR__ . '/../modele/Point.php');
+include_once (__DIR__ . '/../modele/Outils.php');
 
 // inclusion des paramètres de l'application
 include_once ('parametres.php');
@@ -548,55 +548,56 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 2 (Johann Lucas) : lignes 550 à 749
     // --------------------------------------------------------------------------------------
-    
+    public function getLesPointsDeTrace($idTrace) {
+        $txt_req = "Select idTrace, id, latitude, longitude, altitude, dateHeure, rythmeCardio
+                    from tracegps_points
+                    where idTrace = :idTrace
+                    order by dateHeure";
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+        $req = $this->cnx->prepare($txt_req);
+        $req->bindValue("idTrace", $idTrace, PDO::PARAM_INT);
+        $req->execute();
+
+        $lesPoints = array();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+
+        while ($uneLigne) {
+            $unIdTrace = $uneLigne->idTrace;
+            $unId = $uneLigne->id;
+            $uneLatitude = $uneLigne->latitude;
+            $uneLongitude = $uneLigne->longitude;
+            $uneAltitude = $uneLigne->altitude;
+            $uneDateHeure = $uneLigne->dateHeure;
+            $unRythmeCardio = $uneLigne->rythmeCardio;
+
+            // Variables calculées ou initialisées à 0
+            $unTempsCumule = 0;
+            $uneDistanceCumulee = 0;
+            $uneVitesse = 0;
+
+            $unPoint = new PointDeTrace(
+                $unIdTrace,
+                $unId,
+                $uneLatitude,
+                $uneLongitude,
+                $uneAltitude,
+                $uneDateHeure,
+                $unRythmeCardio,
+                $unTempsCumule,
+                $uneDistanceCumulee,
+                $uneVitesse
+            );
+
+            $lesPoints[] = $unPoint;
+            $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        }
+
+        $req->closeCursor();
+        return $lesPoints;
+    }
+
+
+
     
     
     
