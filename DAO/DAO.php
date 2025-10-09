@@ -1062,6 +1062,30 @@ public function getLesTraces($idUtilisateur)
     $req->closeCursor();
     return $lesTraces;
 }
+
+public function creerUneTrace($uneTrace)
+{
+    $ok = false;
+
+    $sql = "INSERT INTO tracegps_traces (dateDebut, dateFin, terminee, idUtilisateur)
+            VALUES (:dateDebut, :dateFin, :terminee, :idUtilisateur);";
+    $req = $this->cnx->prepare($sql);
+
+    $req->bindValue(":dateDebut", $uneTrace->getDateHeureDebut(), PDO::PARAM_STR);
+
+    if ($uneTrace->getDateHeureFin() == null)
+        $req->bindValue(":dateFin", null, PDO::PARAM_NULL);
+    else
+        $req->bindValue(":dateFin", $uneTrace->getDateHeureFin(), PDO::PARAM_STR);
+
+    $req->bindValue(":terminee", $uneTrace->getTerminee(), PDO::PARAM_BOOL);
+    $req->bindValue(":idUtilisateur", $uneTrace->getIdUtilisateur(), PDO::PARAM_INT);
+
+    $ok = $req->execute();
+
+    $req->closeCursor();
+    return $ok;
+}
     
     
     
