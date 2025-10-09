@@ -451,7 +451,20 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
     
     public function autoriseAConsulter($idAutorisant, $idAutorise)
     {
-        $autorise = $this->getLesUtilisateursAutorises($idAutorise);
+        $txt_req = "Select u.id
+                from tracegps_vue_utilisateurs u
+                join tracegps_autorisations a on a.idAutorise = u.id
+                where a.idAutorisant = :idUtilisateur
+                and u.niveau = 1
+                order by u.pseudo";
+
+        $req = $this->cnx->prepare($txt_req);
+        $req->bindValue("idUtilisateur", mb_convert_encoding($idAutorisant, 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
+        $req->execute();
+
+        $autorise = $req->fetch(PDO::FETCH_OBJ);
+
+        return ($autorise && $autorise->id == $idAutorise);
     }
     
     
@@ -532,60 +545,6 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-
-
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 2 (Johann Lucas) : lignes 550 à 749
     // --------------------------------------------------------------------------------------
