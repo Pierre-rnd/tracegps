@@ -168,8 +168,7 @@ class DAO
             $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
             $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
             $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
-            $uneDateDerniereTrace = mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1');
-            
+            $uneDateDerniereTrace = mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1');            
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             return $unUtilisateur;
         }
@@ -196,7 +195,7 @@ class DAO
         // tant qu'une ligne est trouvée :
         while ($uneLigne) {
             // création d'un objet Utilisateur
-            $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
+$unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
             $unPseudo = mb_convert_encoding($uneLigne->pseudo, 'UTF-8', 'ISO-8859-1');
             $unMdpSha1 = mb_convert_encoding($uneLigne->mdpSha1, 'UTF-8', 'ISO-8859-1');
             $uneAdrMail = mb_convert_encoding($uneLigne->adrMail, 'UTF-8', 'ISO-8859-1');
@@ -204,8 +203,7 @@ class DAO
             $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
             $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
             $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
-            $uneDateDerniereTrace = mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1');
-            
+            $uneDateDerniereTrace = mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1');            
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             // ajout de l'utilisateur à la collection
             $lesUtilisateurs[] = $unUtilisateur;
@@ -237,8 +235,7 @@ class DAO
         $req1->bindValue("adrMail", mb_convert_encoding($unUtilisateur->getAdrmail(), 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
         $req1->bindValue("numTel", mb_convert_encoding($unUtilisateur->getNumTel(), 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
         $req1->bindValue("niveau", mb_convert_encoding($unUtilisateur->getNiveau(), 'UTF-8', 'ISO-8859-1'), PDO::PARAM_INT);
-        $req1->bindValue("dateCreation", mb_convert_encoding($unUtilisateur->getDateCreation(), 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
-        // exécution de la requête
+        $req1->bindValue("dateCreation", mb_convert_encoding($unUtilisateur->getDateCreation(), 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);        // exécution de la requête
         $ok = $req1->execute();
         // sortir en cas d'échec
         if ( ! $ok) { return false; }
@@ -300,7 +297,7 @@ class DAO
             $txt_req2 .= " where pseudo = :pseudo";
             $req2 = $this->cnx->prepare($txt_req2);
             // liaison de la requête et de ses paramètres
-            $req2->bindValue("pseudo", mb_convert_encoding($pseudo, 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
+            $req2->bindValue("pseudo", mb_convert_encoding($unUtilisateur->getPseudo(), 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
             // exécution de la requête
             $ok = $req2->execute();
             return $ok;
@@ -371,6 +368,45 @@ class DAO
         }
     }
     
+    public function getLesUtilisateursAutorisant($idUtilisateur)
+    {
+        $txt_req = "Select u.id, u.pseudo, u.mdpSha1, u.adrMail, u.numTel, u.niveau, 
+                       u.dateCreation, u.nbTraces, u.dateDerniereTrace
+                from tracegps_vue_utilisateurs u
+                join tracegps_autorisations a on a.idAutorisant = u.id
+                where a.idAutorise = :idUtilisateur
+                and u.niveau = 1
+                order by u.pseudo";
+
+        $req = $this->cnx->prepare($txt_req);
+        $req->bindValue("idUtilisateur", mb_convert_encoding($idUtilisateur, 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
+        $req->execute();
+
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        $lesUtilisateurs = array();
+
+        // tant qu'une ligne est trouvée :
+        while ($uneLigne) {
+            // création d'un objet Utilisateur
+            $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
+            $unPseudo = mb_convert_encoding($uneLigne->pseudo, 'UTF-8', 'ISO-8859-1');
+            $unMdpSha1 = mb_convert_encoding($uneLigne->mdpSha1, 'UTF-8', 'ISO-8859-1');
+            $uneAdrMail = mb_convert_encoding($uneLigne->adrMail, 'UTF-8', 'ISO-8859-1');
+            $unNumTel = mb_convert_encoding($uneLigne->numTel, 'UTF-8', 'ISO-8859-1');
+            $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
+            $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
+            $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
+            $uneDateDerniereTrace = mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1');            
+            $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
+            // ajout de l'utilisateur à la collection
+            $lesUtilisateurs[] = $unUtilisateur;
+            // extrait la ligne suivante
+            $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        }
+
+        $req->closeCursor();
+        return $lesUtilisateurs;
+    }
     
     
     
@@ -505,46 +541,10 @@ class DAO
     
     
     
+
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 2 (Johann Lucas) : lignes 550 à 749
     // --------------------------------------------------------------------------------------
