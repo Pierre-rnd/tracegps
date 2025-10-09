@@ -982,8 +982,91 @@ class DAO
     return $lesTraces;
 }
     
+public function creerUneTrace($uneTrace)
+{
+    $ok = false;
+
+    $sql = "INSERT INTO tracegps_traces (dateHeureDebut, dateHeureFin, terminee, idUtilisateur)
+            VALUES (:dateHeureDebut, :dateHeureFin, :terminee, :idUtilisateur);";
+    $req = $this->cnx->prepare($sql);
+
+    $req->bindValue(":dateHeureDebut", $uneTrace->getDateHeureDebut(), PDO::PARAM_STR);
+
+    if ($uneTrace->getDateHeureFin() == null)
+        $req->bindValue(":dateHeureFin", null, PDO::PARAM_NULL);
+    else
+        $req->bindValue(":dateHeureFin", $uneTrace->getDateHeureFin(), PDO::PARAM_STR);
+
+    $req->bindValue(":terminee", $uneTrace->getTerminee(), PDO::PARAM_BOOL);
+    $req->bindValue(":idUtilisateur", $uneTrace->getIdUtilisateur(), PDO::PARAM_INT);
+
+    $ok = $req->execute();
+
     
+    if ($ok) $uneTrace->setId($this->cnx->lastInsertId());
+
+    $req->closeCursor();
+    return $ok;
+}
     
+public function getLesTraces($idUtilisateur)
+{
+    $lesTraces = array();
+
+    $sql = "SELECT * FROM tracegps_traces
+            WHERE idUtilisateur = :idUtilisateur
+            ORDER BY id DESC;";
+    $req = $this->cnx->prepare($sql);
+    $req->bindValue(":idUtilisateur", $idUtilisateur, PDO::PARAM_INT);
+    $req->execute();
+    $lesLignes = $req->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($lesLignes as $ligne) {
+        $idTrace = $ligne['id'];
+        $dateHeureDebut = $ligne['dateHeureDebut'];
+        $dateHeureFin = $ligne['dateHeureFin'];
+        $terminee = $ligne['terminee'];
+
+        $uneTrace = new Trace($idTrace, $dateHeureDebut, $dateHeureFin, $terminee, $idUtilisateur);
+
+        
+        $lesPoints = $this->getLesPointsDeTrace($idTrace);
+        foreach ($lesPoints as $unPoint) {
+            $uneTrace->ajouterPoint($unPoint);
+        }
+
+        $lesTraces[] = $uneTrace;
+    }
+
+    $req->closeCursor();
+    return $lesTraces;
+}
+    
+public function supprimerUneTrace($idTrace)
+{
+    $ok = false;
+
+    try {
+        
+        $sql = "DELETE FROM tracegps_points WHERE idTrace = :idTrace;";
+        $req = $this->cnx->prepare($sql);
+        $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
+        $req->execute();
+        $req->closeCursor();
+
+        
+        $sql = "DELETE FROM tracegps_traces WHERE id = :idTrace;";
+        $req = $this->cnx->prepare($sql);
+        $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
+        $ok = $req->execute();
+        $req->closeCursor();
+
+    } catch (Exception $e) {
+        $ok = false;
+    }
+
+    return $ok;
+}
     
     
     
