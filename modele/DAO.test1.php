@@ -39,8 +39,37 @@ echo "<p>Existence de l'utilisateur 'admin@gmail.com' : <b>" . $existe . "</b><b
 if ($dao->existeAdrMailUtilisateur("delasalle.sio.eleves@gmail.com")) $existe = "oui"; else $existe = "non";
 echo "Existence de l'utilisateur 'delasalle.sio.eleves@gmail.com' : <b>" . $existe . "</b></br>";
 
+// test de la méthode getLesUtilisateursAutorisant ------------------------------------------------
+// modifié par dP le 13/8/2021
+echo "<h3>Test de getLesUtilisateursAutorisant(idUtilisateur) : </h3>";
+$lesUtilisateurs = $dao->getLesUtilisateursAutorisant(4);
+$nbReponses = sizeof($lesUtilisateurs);
+echo "<p>Nombre d'utilisateurs autorisant l'utilisateur 4 à voir leurs parcours : " . $nbReponses . "</p>";
+// affichage des utilisateurs
+foreach ($lesUtilisateurs as $unUtilisateur)
+{ echo ($unUtilisateur->toString());
+ echo ('<br>');
+}
 
+// test de la méthode getLesUtilisateursAutorises -------------------------------------------------
+// modifié par dP le 13/8/2021
+echo "<h3>Test de getLesUtilisateursAutorises(idUtilisateur) : </h3>";
+$lesUtilisateurs = $dao->getLesUtilisateursAutorises(2);
+$nbReponses = sizeof($lesUtilisateurs);
+echo "<p>Nombre d'utilisateurs autorisés par l'utilisateur 2 : " . $nbReponses . "</p>";
+// affichage des utilisateurs
+foreach ($lesUtilisateurs as $unUtilisateur)
+{ echo ($unUtilisateur->toString());
+ echo ('<br>');
+}
 
+// test de la méthode autoriseAConsulter ----------------------------------------------------------
+// modifié par dP le 13/8/2021
+echo "<h3>Test de autoriseAConsulter : </h3>";
+if ($dao->autoriseAConsulter(2, 3)) $autorise = "oui"; else $autorise = "non";
+echo "<p>L'utilisateur 2 autorise l'utilisateur 3 : <b>" . $autorise . "</b><br>";
+if ($dao->autoriseAConsulter(3, 2)) $autorise = "oui"; else $autorise = "non";
+echo "<p>L'utilisateur 3 autorise l'utilisateur 2 : <b>" . $autorise . "</b><br>";
 
 
 
