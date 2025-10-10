@@ -450,24 +450,52 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
     
     
     public function autoriseAConsulter($idAutorisant, $idAutorise)
+{
+    $txt_req = "SELECT *
+                FROM tracegps_autorisations
+                WHERE idAutorisant = :idAutorisant
+                AND idAutorise = :idAutorise";
+
+    $req = $this->cnx->prepare($txt_req);
+    $req->bindValue(":idAutorisant", mb_convert_encoding($idAutorisant, 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
+    $req->bindValue(":idAutorise", mb_convert_encoding($idAutorise, 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
+    $req->execute();
+
+    $autorisation = $req->fetch(PDO::FETCH_OBJ);
+
+    return ($autorisation != null);
+}
+
+    
+    public function creerUneAutorisation($idAutorisant, $idAutorise)
     {
-        $txt_req = "Select u.id
-                from tracegps_vue_utilisateurs u
-                join tracegps_autorisations a on a.idAutorise = u.id
-                where a.idAutorisant = :idUtilisateur
-                and u.niveau = 1
-                order by u.pseudo";
+        if($this->autoriseAConsulter($idAutorisant, $idAutorise)) return false;
+        
+        $txt_req = "Insert into tracegps_autorisations (idAutorisant, idAutorise)
+        VALUES(:idAutorisant,:idAutorise)";
 
         $req = $this->cnx->prepare($txt_req);
-        $req->bindValue("idUtilisateur", mb_convert_encoding($idAutorisant, 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
+        $req->bindValue("idAutorisant", mb_convert_encoding($idAutorisant, 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
+        $req->bindValue("idAutorise", mb_convert_encoding($idAutorise, 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
         $req->execute();
-
-        $autorise = $req->fetch(PDO::FETCH_OBJ);
-
-        return ($autorise && $autorise->id == $idAutorise);
+        return true;
     }
-    
-    
+
+    public function supprimerUneAutorisation($idAutorisant, $idAutorise)
+    {
+        if(!$this->autoriseAConsulter($idAutorisant, $idAutorise)) return false;
+        
+        $txt_req = "delete from tracegps_autorisations
+        where idAutorisant = :idAutorisant and idAutorise = :idAutorise";
+
+        $req = $this->cnx->prepare($txt_req);
+        $req->bindValue("idAutorisant", mb_convert_encoding($idAutorisant, 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
+        $req->bindValue("idAutorise", mb_convert_encoding($idAutorise, 'UTF-8', 'ISO-8859-1'), PDO::PARAM_STR);
+        $ok = $req->execute();
+        return $ok;
+    }
+
+
     
     
     
