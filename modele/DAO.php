@@ -639,6 +639,69 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
         return true;
     }
 
+    public function getUneTrace($idTrace) {
+        $txt_req = "SELECT id, dateDebut, dateFin, terminee, idUtilisateur
+                    FROM tracegps_traces
+                    WHERE id = :idTrace";
+
+        $req = $this->cnx->prepare($txt_req);
+        $req->bindValue("idTrace", $idTrace, PDO::PARAM_INT);
+        $req->execute();
+
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        $req->closeCursor();
+
+        if (! $uneLigne) {
+            return null;
+        }
+
+        $unId = $uneLigne->id;
+        $uneDateDebut = $uneLigne->dateDebut;
+        $uneDateFin = $uneLigne->dateFin;
+        $estTerminee = $uneLigne->terminee;
+        $unIdUtilisateur = $uneLigne->idUtilisateur;
+
+        $uneTrace = new Trace(
+            $unId,
+            $uneDateDebut,
+            $uneDateFin,
+            $estTerminee,
+            $unIdUtilisateur
+        );
+
+        $lesPoints = $this->getLesPointsDeTrace($idTrace);
+
+        foreach ($lesPoints as $unPoint) {
+            $uneTrace->ajouterPoint($unPoint);
+        }
+
+        return $uneTrace;
+    }
+
+    public function terminerUneTrace($idTrace) {
+        $lesPoints = $this->getLesPointsDeTrace($idTrace);
+
+        if (count($lesPoints) > 0) {
+            $dernierPoint = $lesPoints[count($lesPoints) - 1];
+            $dateFin = $dernierPoint->getDateHeure();
+        } else {
+            $dateFin = date('Y-m-d H:i:s');
+        }
+
+        $txt_req = "UPDATE tracegps_traces
+                    SET dateFin = :dateFin, terminee = 1
+                    WHERE id = :idTrace";
+
+        $req = $this->cnx->prepare($txt_req);
+
+        $req->bindValue("dateFin", $dateFin, PDO::PARAM_STR);
+        $req->bindValue("idTrace", $idTrace, PDO::PARAM_INT);
+
+        $ok = $req->execute();
+        $req->closeCursor();
+
+        return $ok;
+    }
 
 
 
