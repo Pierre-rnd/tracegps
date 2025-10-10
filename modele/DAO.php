@@ -1115,7 +1115,40 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
         return $ok;
     }
 
+    public function getLesTracesAutorisees($idUtilisateur)
+    {
+        $lesTraces = array();
 
+        $sql = "SELECT * FROM tracegps_traces
+                WHERE idUtilisateur = :idUtilisateur
+                ORDER BY id DESC;";
+
+        $req = $this->cnx->prepare($sql);
+        $req->bindValue(":idUtilisateur", $idUtilisateur, PDO::PARAM_INT);
+        $req->execute();
+        $lesLignes = $req->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($lesLignes as $ligne) {
+            $idTrace = $ligne['id'];
+            $dateHeureDebut = $ligne['dateHeureDebut'] ?? $ligne['dateDebut'] ?? null;
+            $dateHeureFin   = $ligne['dateHeureFin'] ?? $ligne['dateFin'] ?? null;
+            $terminee = $ligne['terminee'];
+            $idUtilisateurCreateur = $ligne['idUtilisateur']; // propriétaire réel de la trace
+
+            $uneTrace = new Trace($idTrace, $dateHeureDebut, $dateHeureFin, $terminee, $idUtilisateurCreateur);
+
+            // Ajout des points
+            $lesPoints = $this->getLesPointsDeTrace($idTrace);
+            foreach ($lesPoints as $unPoint) {
+                $uneTrace->ajouterPoint($unPoint);
+            }
+
+            $lesTraces[] = $uneTrace;
+        }
+
+        $req->closeCursor();
+        return $lesTraces;
+    }
     
     
     
