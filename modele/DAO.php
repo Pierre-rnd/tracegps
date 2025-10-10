@@ -1119,9 +1119,15 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
     {
         $lesTraces = array();
 
-        $sql = "SELECT * FROM tracegps_traces
-                WHERE idUtilisateur = :idUtilisateur
-                ORDER BY id DESC;";
+        $sql = "SELECT *
+        FROM tracegps_traces 
+        WHERE tracegps_traces.idUtilisateur = :idUtilisateur
+           OR tracegps_traces.idUtilisateur IN (
+                SELECT idAutorisant
+                FROM tracegps_autorisations
+                WHERE idAutorise = :idUtilisateur
+           )
+        ORDER BY tracegps_traces.id DESC;";
 
         $req = $this->cnx->prepare($sql);
         $req->bindValue(":idUtilisateur", $idUtilisateur, PDO::PARAM_INT);
