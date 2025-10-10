@@ -37,11 +37,11 @@
 
 
 // certaines méthodes nécessitent les classes suivantes :
-include_once (__DIR__ . '/../modele/Utilisateur.php');
-include_once (__DIR__ . '/../modele/Trace.php');
-include_once (__DIR__ . '/../modele/PointDeTrace.php');
-include_once (__DIR__ . '/../modele/Point.php');
-include_once (__DIR__ . '/../modele/Outils.php');
+include_once ('Utilisateur.php');
+include_once ('Trace.php');
+include_once ('PointDeTrace.php');
+include_once ('Point.php');
+include_once ('Outils.php');
 
 // inclusion des paramètres de l'application
 include_once ('parametres.php');
@@ -396,7 +396,7 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
             $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
             $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
             $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
-            $uneDateDerniereTrace = mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1');            
+            $uneDateDerniereTrace = $uneLigne->dateDerniereTrace != null ? mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1'): "";            
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             // ajout de l'utilisateur à la collection
             $lesUtilisateurs[] = $unUtilisateur;
@@ -436,7 +436,7 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
             $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
             $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
             $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
-            $uneDateDerniereTrace = mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1');            
+            $uneDateDerniereTrace = $uneLigne->dateDerniereTrace != null ? mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1'): "";            
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             // ajout de l'utilisateur à la collection
             $lesUtilisateurs[] = $unUtilisateur;
@@ -1066,14 +1066,14 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
         return $lesTraces;
     }
 
-
     public function creerUneTrace($uneTrace)
     {
-        $sql = "INSERT INTO tracegps_traces (id, dateDebut, dateFin, terminee, idUtilisateur) ";
-        $sql.= " VALUES (:id, :dateDebut, :dateFin, :terminee, :idUtilisateur);";
+        $ok = false;
 
+        $sql = "INSERT INTO tracegps_traces (dateDebut, dateFin, terminee, idUtilisateur)
+                VALUES (:dateDebut, :dateFin, :terminee, :idUtilisateur);";
         $req = $this->cnx->prepare($sql);
-        $req->bindValue(":id", $uneTrace->getId(), PDO::PARAM_INT);
+
         $req->bindValue(":dateDebut", $uneTrace->getDateHeureDebut(), PDO::PARAM_STR);
 
         if ($uneTrace->getDateHeureFin() == null)
@@ -1090,30 +1090,7 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
         return $ok;
     }
 
-    public function supprimerUneTrace($idTrace)
-    {
-        try {
-            
-                $sql = "DELETE FROM tracegps_points WHERE idTrace = :idTrace;";
-                $req = $this->cnx->prepare($sql);
-                $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
-                $req->execute();
-                $req->closeCursor();
 
-                
-                $sql = "DELETE FROM tracegps_traces WHERE id = :idTrace;";
-                $req = $this->cnx->prepare($sql);
-                $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
-                $ok = $req->execute();
-                $req->closeCursor();
-            } 
-            catch (Exception $e) { 
-        }
-
-        return $ok;
-    }
-        
-    
     
     
     
