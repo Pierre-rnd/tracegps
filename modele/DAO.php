@@ -782,9 +782,15 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
     {
         $lesTraces = array();
 
-        $sql = "SELECT * FROM tracegps_traces
-                WHERE idUtilisateur = :idUtilisateur
-                ORDER BY id DESC;";
+        $sql = "SELECT *
+        FROM tracegps_traces 
+        WHERE tracegps_traces.idUtilisateur = :idUtilisateur
+           OR tracegps_traces.idUtilisateur IN (
+                SELECT idAutorisant
+                FROM tracegps_autorisations
+                WHERE idAutorise = :idUtilisateur
+           )
+        ORDER BY tracegps_traces.id DESC;";
 
         $req = $this->cnx->prepare($sql);
         $req->bindValue(":idUtilisateur", $idUtilisateur, PDO::PARAM_INT);
@@ -1072,50 +1078,7 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
         return $ok;
     }
 
-<<<<<<< HEAD
-    public function getLesTracesAutorisees($idUtilisateur)
-    {
-        $lesTraces = array();
-
-        $sql = "SELECT *
-        FROM tracegps_traces 
-        WHERE tracegps_traces.idUtilisateur = :idUtilisateur
-           OR tracegps_traces.idUtilisateur IN (
-                SELECT idAutorisant
-                FROM tracegps_autorisations
-                WHERE idAutorise = :idUtilisateur
-           )
-        ORDER BY tracegps_traces.id DESC;";
-
-        $req = $this->cnx->prepare($sql);
-        $req->bindValue(":idUtilisateur", $idUtilisateur, PDO::PARAM_INT);
-        $req->execute();
-        $lesLignes = $req->fetchAll(PDO::FETCH_ASSOC);
-
-        foreach ($lesLignes as $ligne) {
-            $idTrace = $ligne['id'];
-            $dateHeureDebut = $ligne['dateHeureDebut'] ?? $ligne['dateDebut'] ?? null;
-            $dateHeureFin   = $ligne['dateHeureFin'] ?? $ligne['dateFin'] ?? null;
-            $terminee = $ligne['terminee'];
-            $idUtilisateurCreateur = $ligne['idUtilisateur']; // propriétaire réel de la trace
-
-            $uneTrace = new Trace($idTrace, $dateHeureDebut, $dateHeureFin, $terminee, $idUtilisateurCreateur);
-
-            // Ajout des points
-            $lesPoints = $this->getLesPointsDeTrace($idTrace);
-            foreach ($lesPoints as $unPoint) {
-                $uneTrace->ajouterPoint($unPoint);
-            }
-
-            $lesTraces[] = $uneTrace;
-        }
-
-        $req->closeCursor();
-        return $lesTraces;
-    }
-=======
     
->>>>>>> 3aaba810b7a548aa3b4da29564a43ec821836839
     
     
     
