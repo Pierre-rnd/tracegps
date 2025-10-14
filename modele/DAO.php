@@ -1059,7 +1059,7 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
 
             if (!$trace) return false;
 
-            $this->cnx->prepare("DELETE FROM tracegps_points WHERE idTrace = :idTrace")
+            $ok = $this->cnx->prepare("DELETE FROM tracegps_points WHERE idTrace = :idTrace")
                     ->execute([":idTrace" => $idTrace]);
 
             $ok = $this->cnx->prepare("DELETE FROM tracegps_traces WHERE id = :idTrace")
