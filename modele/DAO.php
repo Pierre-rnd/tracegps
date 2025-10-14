@@ -1047,28 +1047,27 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
 
     public function supprimerUneTrace($idTrace)
     {
-        
-
         try {
             
-            $sql = "DELETE FROM tracegps_points WHERE idTrace = :idTrace;";
-            $req = $this->cnx->prepare($sql);
+            $req = $this->cnx->prepare("SELECT id FROM tracegps_traces WHERE id = :idTrace");
             $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
             $req->execute();
+            $trace = $req->fetch();
             $req->closeCursor();
 
-            
-            $sql = "DELETE FROM tracegps_traces WHERE id = :idTrace;";
-            $req = $this->cnx->prepare($sql);
-            $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
-            $ok = $req->execute();
-            $req->closeCursor();
+            if (!$trace) return false;
+
+            $this->cnx->prepare("DELETE FROM tracegps_points WHERE idTrace = :idTrace")
+                    ->execute([":idTrace" => $idTrace]);
+
+            $ok = $this->cnx->prepare("DELETE FROM tracegps_traces WHERE id = :idTrace")
+                            ->execute([":idTrace" => $idTrace]);
+
+            return $ok;
 
         } catch (Exception $e) {
-            
+            return false;
         }
-
-        return $ok;
     }
 
     
