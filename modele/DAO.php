@@ -802,11 +802,11 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
             $dateHeureDebut = $ligne['dateHeureDebut'] ?? $ligne['dateDebut'] ?? null;
             $dateHeureFin   = $ligne['dateHeureFin'] ?? $ligne['dateFin'] ?? null;
             $terminee = $ligne['terminee'];
-            $idUtilisateurCreateur = $ligne['idUtilisateur']; // propriétaire réel de la trace
+            $idUtilisateurCreateur = $ligne['idUtilisateur'];
 
             $uneTrace = new Trace($idTrace, $dateHeureDebut, $dateHeureFin, $terminee, $idUtilisateurCreateur);
 
-            // Ajout des points
+            
             $lesPoints = $this->getLesPointsDeTrace($idTrace);
             foreach ($lesPoints as $unPoint) {
                 $uneTrace->ajouterPoint($unPoint);
