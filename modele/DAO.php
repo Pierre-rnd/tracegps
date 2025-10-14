@@ -1050,8 +1050,8 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
     public function supprimerUneTrace($idTrace)
     {
         try {
-            
-            $req = $this->cnx->prepare("SELECT id FROM tracegps_traces WHERE id = :idTrace");
+            $sql = "SELECT id FROM tracegps_traces WHERE id = :idTrace";
+            $req = $this->cnx->prepare($sql);
             $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
             $req->execute();
             $trace = $req->fetch();
