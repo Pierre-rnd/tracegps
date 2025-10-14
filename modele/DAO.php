@@ -778,19 +778,21 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
         return $ok;
     }
     
-    public function getLesTracesAutorisees($idUtilisateur)
+        public function getLesTracesAutorisees($idUtilisateur)
     {
         $lesTraces = array();
-
-        $sql = "SELECT *
-        FROM tracegps_traces 
-        WHERE tracegps_traces.idUtilisateur = :idUtilisateur
-           OR tracegps_traces.idUtilisateur IN (
-                SELECT idAutorisant
-                FROM tracegps_autorisations
-                WHERE idAutorise = :idUtilisateur
-           )
-        ORDER BY tracegps_traces.id DESC;";
+        $sql = "SELECT t.*
+                FROM tracegps_traces t
+                JOIN tracegps_utilisateurs u ON u.id = t.idUtilisateur
+                WHERE (t.idUtilisateur = :idUtilisateur
+                       OR EXISTS (
+                           SELECT 1 FROM tracegps_autorisations a
+                           WHERE a.idAutorisant = t.idUtilisateur
+                             AND a.idAutorise = :idUtilisateur
+                       )
+                )
+                AND u.niveau = 1
+                ORDER BY t.id DESC;";
 
         $req = $this->cnx->prepare($sql);
         $req->bindValue(":idUtilisateur", $idUtilisateur, PDO::PARAM_INT);
@@ -799,14 +801,13 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
 
         foreach ($lesLignes as $ligne) {
             $idTrace = $ligne['id'];
-            $dateHeureDebut = $ligne['dateHeureDebut'] ?? $ligne['dateDebut'] ?? null;
-            $dateHeureFin   = $ligne['dateHeureFin'] ?? $ligne['dateFin'] ?? null;
+            $dateHeureDebut = isset($ligne['dateHeureDebut']) ? $ligne['dateHeureDebut'] : ($ligne['dateDebut'] ?? null);
+            $dateHeureFin   = isset($ligne['dateHeureFin']) ? $ligne['dateHeureFin'] : ($ligne['dateFin'] ?? null);
             $terminee = $ligne['terminee'];
-            $idUtilisateurCreateur = $ligne['idUtilisateur']; 
+            $idUtilisateurCreateur = $ligne['idUtilisateur'];
 
             $uneTrace = new Trace($idTrace, $dateHeureDebut, $dateHeureFin, $terminee, $idUtilisateurCreateur);
 
-           
             $lesPoints = $this->getLesPointsDeTrace($idTrace);
             foreach ($lesPoints as $unPoint) {
                 $uneTrace->ajouterPoint($unPoint);
@@ -1064,8 +1065,8 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
             $ok = $req->execute();
             $req->closeCursor();
 
-        } catch (Exception $e) {
-            
+        } catch (Exception $e) { 
+
         }
 
         return $ok;
