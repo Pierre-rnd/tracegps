@@ -77,15 +77,15 @@ else {
                             $code_reponse = 700;
                         }
                         else {
-                            if ($texteMessage = "") {
+                            if ($texteMessage == "") {
                                 $message = "Autorisation supprimée.";
                                 $code_reponse = 800;
                             }
                             else {
                                 $adrMailDemandeur = $utilisateurRetirer->getAdrMail();
                                 $sujetMail = "Suppression d'autorisation de la part d'un utilisateur du système TraceGPS";
-                                $contenuMail = "Cher ou chère " . $pseudo . "\n\n";
-                                $contenuMail .= "L'utilisateur " . $pseudoARetirer . " du système TraceGPS vous retire l'autorisation de suivre ses parcours.\n\n";
+                                $contenuMail = "Cher ou chère " . $pseudoARetirer . "\n\n";
+                                $contenuMail .= "L'utilisateur " . $pseudo . " du système TraceGPS vous retire l'autorisation de suivre ses parcours.\n\n";
                                 $contenuMail .= "Son message : " . $texteMessage . "\n\n";
                                 $contenuMail .= "Cordialement,\n L'administrateur du système TraceGPS";
                                 if(Outils::envoyerMail($adrMailDemandeur, $sujetMail, $contenuMail, $ADR_MAIL_EMETTEUR)){
