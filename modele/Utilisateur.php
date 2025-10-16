@@ -1,4 +1,5 @@
 <?php
+use modele\Point;
 // Projet TraceGPS
 // fichier : modele/Utilisateur.php
 // Rôle : la classe Utilisateur représente les utilisateurs de l'application
