@@ -40,7 +40,7 @@ else {
         $code_reponse = 400;
     }
     else {
-        if ( strlen($nouveauMdp) < 3 ) {
+        if ( strlen($nouveauMdp) < 8 ) {
             $msg = 'Erreur : le mot de passe doit comporter au moins 8 caractères.';
             $code_reponse = 400;
         }
