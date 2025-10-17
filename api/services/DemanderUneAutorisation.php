@@ -1,4 +1,18 @@
 <?php
+// Rôle : ce service web permet à un utilisateur de demander une autorisation à un autre utilisateur.
+// Paramètres à fournir :
+// • pseudo : le pseudo de l'utilisateur qui demande l'autorisation
+// • mdp : le mot de passe hashé en sha1 de l'utilisateur qui demande l'autorisation
+// • pseudoDestinataire : le pseudo de l'utilisateur à qui on demande l'autorisation
+// • texteMessage : le texte d'un message accompagnant la demande
+// • nomPrenom : le nom et le prénom du demandeur
+// • lang : le langage utilisé pour le flux de données ("xml" ou "json")
+// Description du traitement :
+// • Vérifier que les données transmises sont complètes
+// • Vérifier l'authentification de l'utilisateur demandeur
+// • Vérifier que le pseudo de l'utilisateur destinataire existe
+// • Envoyer un courriel à l'utilisateur destinataire
+
 global $ADR_MAIL_EMETTEUR, $ADR_SERVICE_WEB;
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
