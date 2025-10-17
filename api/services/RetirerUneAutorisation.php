@@ -35,34 +35,7 @@ else {
                     $code_reponse = 400;
                     }
                 else{
-                    // $utilisateurDestinataire = $dao->getUnUtilisateur($pseudoDestinataire);
-                    // $utilisateurEmmeteur = $dao->getUnUtilisateur($pseudo);
-                    // $numTel = $utilisateurEmmeteur->getNumTel();
-                    // $adrMailDemandeur = $utilisateurDestinataire->getAdrMail();
-                    // $ardMailEmeteur = $utilisateurEmmeteur->getAdrMail();
 
-            		// $sujetMail = "Demande d'autorisation de la part d'un utilisateur du système TraceGPS";
-            		// $contenuMail = "Cher ou chère " . $pseudoDestinataire . "\n\n";
-                    // $contenuMail .= "Un utilisateur du système TraceGPS vous demande l'autorisation de suivre vos parcours. \n\n";
-                    // $contenuMail .= "Voici les données le concernant : \n\n";
-                    // $contenuMail .= "Son pseudo : " . $pseudo . "\n\n";
-                    // $contenuMail .= "Son adresse mail : " . $ardMailEmeteur . "\n\n";
-                    // $contenuMail .= "Son numéro de téléphone : " . $numTel . "\n\n";
-                    // $contenuMail .= "Son message : " . $texteMessage . "\n\n";
-                    // $contenuMail .= "Pour accepter la demande, cliquez sur ce lien : \n";
-                    // $lienAcceptation = "http://localhost/ws-php-pr/tracegps/api/ValiderDemandeAutorisation?"
-                    // . "a=" . $mdpSha1
-                    // . "&b=" . $pseudo
-                    // . "&c=" . $pseudoDestinataire
-                    // . "&d=1";
-                    // $contenuMail .= $lienAcceptation . "\n\n";
-                    // $contenuMail .= "Pour rejeter la demande, cliquez sur ce lien : \n";
-                    // $lienRefus = "http://localhost/ws-php-pr/tracegps/api/ValiderDemandeAutorisation?"
-                    // . "a=" . $mdpSha1
-                    // . "&b=" . $pseudo
-                    // . "&c=" . $pseudoDestinataire
-                    // . "&d=0";
-                    // $contenuMail .= $lienRefus;
                     $utilisateurDemandeur = $dao->getUnUtilisateur($pseudo);
                     $utilisateurRetirer = $dao->getUnUtilisateur($pseudoARetirer);
                     $idDemandeur = $utilisateurDemandeur->getId();

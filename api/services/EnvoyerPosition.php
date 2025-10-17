@@ -40,7 +40,25 @@ else {
                         $code_reponse = 500;
                     }
                 else {
-
+                    $utilisateur = $dao->getUnUtilisateur($pseudo);
+                    $idUtilisateur = $utilisateur->getId();
+                    $idProprietaire = $uneTrace->getIdUtilisateur();
+                    if ($idUtilisateur != $idProprietaire) {
+                        $message = "Erreur : le numéro de trace ne correspond pas à cet utilisateur.";
+                        $code_reponse = 501;
+                    }
+                    else {
+                        $terminee = $uneTrace->getTerminee();
+                        if ($terminee == true) {
+                            $message = "Erreur : la trace est déjà terminée.";
+                            $code_reponse = 600;
+                        }
+                        else {
+                            
+                            $message = "Point créé.";
+                            $code_reponse = 200;
+                        }
+                    }
                 }
             }
         }
