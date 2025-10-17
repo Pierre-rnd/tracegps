@@ -1,4 +1,15 @@
 <?php
+// Rôle : ce service web permet à un utilisateur d'obtenir la liste des utilisateurs qui l'autorisent à consulter 
+// leurs parcours.
+// Paramètres à fournir :
+// • pseudo : le pseudo de l'utilisateur
+// • mdp : le mot de passe de l'utilisateur hashé en sha1
+// • lang : le langage utilisé pour le flux de données ("xml" ou "json")
+// Description du traitement :
+// • Vérifier que les données transmises sont complètes
+// • Vérifier l'authentification de l'utilisateur
+// • Fournir la liste des utilisateurs qui l'autorisent à consulter leurs parcours.
+
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 	
