@@ -6,8 +6,12 @@ $dao = new DAO();
 // Récupération des données transmises
 $pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
 $mdpSha1 = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
-$pseudoARetirer = ( empty($this->request['pseudoARetirer'])) ? "" : $this->request['pseudoARetirer'];
-$texteMessage = ( empty($this->request['texteMessage'])) ? "" : $this->request['texteMessage'];
+$idTrace = ( empty($this->request['idTrace'])) ? "" : $this->request['idTrace'];
+$dateHeure = ( empty($this->request['dateHeure'])) ? "" : $this->request['dateHeure'];
+$latitude = ( empty($this->request['latitude'])) ? "" : $this->request['latitude'];
+$longitude = ( empty($this->request['longitude'])) ? "" : $this->request['longitude'];
+$altitude = ( empty($this->request['altitude'])) ? "" : $this->request['altitude'];
+$rythmeCardio = ( empty($this->request['rythmeCardio'])) ? "" : $this->request['rythmeCardio'];
 $lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
 
 // La méthode HTTP utilisée doit être GET
@@ -17,62 +21,46 @@ if ($this->getMethodeRequete() != "GET")
 }
 else {
     // Les paramètres doivent être présents et corrects
-    if ( $mdpSha1 == "" || $pseudo == "" || $pseudoARetirer == "")
+    if ( $mdpSha1 == "" || $pseudo == "" || $idTrace == "")
     {	$message = "Erreur : données incomplètes ou incorrectes.";
         $code_reponse = 400;
     }
     else
         {	$niveauConnexion = $dao->getNiveauConnexion($pseudo, $mdpSha1);
             if ( $niveauConnexion == 0 )
-    	    {  $message = "Erreur : authentification incorrecte.";
-    	   $code_reponse = 401;
+    	    {  
+                $message = "Erreur : authentification incorrecte.";
+    	        $code_reponse = 401;
     	    }
             else{
-
-                $unUtilisateur = $dao->getUnUtilisateur($pseudoARetirer);
-                if ($unUtilisateur == null)
-                    {  $message = "Erreur : pseudo utilisateur inexistant.";
-                    $code_reponse = 400;
+                $uneTrace = $dao->getUneTrace($idTrace);
+                if (is_null($uneTrace))
+                    {  
+                        $message = "Erreur : le numéro de trace n'existe pas.";
+                        $code_reponse = 500;
                     }
-                else{
-
-                    $utilisateurDemandeur = $dao->getUnUtilisateur($pseudo);
-                    $utilisateurRetirer = $dao->getUnUtilisateur($pseudoARetirer);
-                    $idDemandeur = $utilisateurDemandeur->getId();
-                    $idRetirer = $utilisateurRetirer->getId();
-                    if (!$dao->autoriseAconsulter($idDemandeur, $idRetirer)) {
-                        $message = "Erreur : l'autorisation n'était pas accordée.";
-                        $code_reponse = 600;
+                else {
+                    $utilisateur = $dao->getUnUtilisateur($pseudo);
+                    $idUtilisateur = $utilisateur->getId();
+                    $idProprietaire = $uneTrace->getIdUtilisateur();
+                    if ($idUtilisateur != $idProprietaire) {
+                        $message = "Erreur : le numéro de trace ne correspond pas à cet utilisateur.";
+                        $code_reponse = 501;
                     }
                     else {
-                        if (!$dao->supprimerUneAutorisation($idDemandeur, $idRetirer)) {
-                            $message = "Erreur : problème lors de la suppression de l'autorisation.";
-                            $code_reponse = 700;
+                        $terminee = $uneTrace->getTerminee();
+                        if ($terminee == true) {
+                            $message = "Erreur : la trace est déjà terminée.";
+                            $code_reponse = 600;
                         }
                         else {
-                            if ($texteMessage == "") {
-                                $message = "Autorisation supprimée.";
-                                $code_reponse = 800;
-                            }
-                            else {
-                                $adrMailDemandeur = $utilisateurRetirer->getAdrMail();
-                                $sujetMail = "Suppression d'autorisation de la part d'un utilisateur du système TraceGPS";
-                                $contenuMail = "Cher ou chère " . $pseudoARetirer . "\n\n";
-                                $contenuMail .= "L'utilisateur " . $pseudo . " du système TraceGPS vous retire l'autorisation de suivre ses parcours.\n\n";
-                                $contenuMail .= "Son message : " . $texteMessage . "\n\n";
-                                $contenuMail .= "Cordialement,\n L'administrateur du système TraceGPS";
-                                if(Outils::envoyerMail($adrMailDemandeur, $sujetMail, $contenuMail, $ADR_MAIL_EMETTEUR)){
-                                    $message = "Autorisation supprimée : "  . $pseudoARetirer . " va recevoir un courriel de notification.";
-                                    $code_reponse = 801;
-                                }
-                                else {
-                                    $message = "Erreur : autorisation supprimée ; l'envoi du courriel de notification a rencontré un problème.";
-                                    $code_reponse = 900;
-                                }
-                                
+                            $ok = $dao->creerUnPointDeTrace($unPointDeTrace);
+                            if ($ok) {
+                                $message = "Point créé.";
+                                $code_reponse = 200;
                             }
                         }
-                    }                   
+                    }
                 }
             }
         }
