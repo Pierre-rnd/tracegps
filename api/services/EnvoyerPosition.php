@@ -54,9 +54,11 @@ else {
                             $code_reponse = 600;
                         }
                         else {
-                            
-                            $message = "Point créé.";
-                            $code_reponse = 200;
+                            $ok = $dao->creerUnPointDeTrace($unPointDeTrace);
+                            if ($ok) {
+                                $message = "Point créé.";
+                                $code_reponse = 200;
+                            }
                         }
                     }
                 }
