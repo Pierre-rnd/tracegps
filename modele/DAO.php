@@ -321,7 +321,7 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
         $message = "Cher(chère) " . $pseudo . "\n\n";
         $message .= "Votre mot de passe d'accès au service service TraceGPS a été modifié.\n\n";
         $message .= "Votre nouveau mot de passe est : " . $nouveauMdp ;
-        $ok = Outils::envoyerMail ($adrMail, $sujet, $message, $ADR_MAIL_EMETTEUR);
+$ok = @Outils::envoyerMail($adrMail, $sujet, $message, $ADR_MAIL_EMETTEUR);
         return $ok;
     }
     

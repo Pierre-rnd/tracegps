@@ -1,4 +1,5 @@
 <?php
+
 $dao = new DAO();
 
 // Récupération des données transmises
