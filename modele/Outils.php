@@ -192,7 +192,7 @@ class Outils
 // 	}
 
 	// La fonction envoyerMail ($adresseDestinataire, $sujet, $message, $adresseEmetteur) envoie un mail à un destinataire
-	// elle utilise le serveur le serveur OVH (sio.lyceedelassale.fr) pour envoyer le mail, en passant par un service web
+	// elle utilise le serveur le serveur OVH (sio.lyceedelasalle.fr) pour envoyer le mail, en passant par un service web
 	// retourne true si envoi correct, false en cas de problème d'envoi
 	// Dernière mise à jour : 6/11/2021 par dPlanchet
 	public static function  envoyerMail ($adresseDestinataire, $sujet, $message, $adresseEmetteur)
@@ -201,11 +201,11 @@ class Outils
 	    $message = str_replace("&", "$$", $message);
 	    
 	    // préparation de l'URL du service web avec ses paramètres
-	    $urlService = "http://sio.lyceedelasalle.fr/tracegps/services/ServiceEnvoyerMail.php";
-	    $urlService .= "?adresseDestinataire=" . $adresseDestinataire;
-	    $urlService .= "&sujet=" . $sujet;
-	    $urlService .= "&message=" . $message;
-	    $urlService .= "&adresseEmetteur=" . $adresseEmetteur;
+			$urlService = "https://sio.lyceedelasalle.fr/tracegps/services/ServiceEnvoyerMail.php";
+			$urlService .= "?adresseDestinataire=" . urlencode($adresseDestinataire);
+			$urlService .= "&sujet=" . urlencode($sujet);
+			$urlService .= "&message=" . urlencode($message);
+			$urlService .= "&adresseEmetteur=" . urlencode($adresseEmetteur);
 	    
 	    // création d'un objet DOMDocument pour traiter un flux de données XML
 	    $dom = new DOMDocument();
