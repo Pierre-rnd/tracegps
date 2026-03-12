@@ -1,159 +1,150 @@
 <?php
 // Projet TraceGPS - services web
-// fichier :  api/services/CreerUnUtilisateur.php
-// Dernière mise à jour : 3/7/2021 par dP
+// fichier : api/services/GetLesParcoursDunUtilisateur.php
+// Rôle : ce service permet à un utilisateur d'obtenir la liste des parcours d'un utilisateur qui l'autorise
 
-// Rôle : ce service permet à un utilisateur de se créer un compte
-// Le service web doit recevoir 4 paramètres :
-//     pseudo : le pseudo de l'utilisateur
-//     adrMail : son adresse mail
-//     numTel : son numéro de téléphone
-//     lang : le langage du flux de données retourné ("xml" ou "json") ; "xml" par défaut si le paramètre est absent ou incorrect
-// Le service retourne un flux de données XML ou JSON contenant un compte-rendu d'exécution
-
-// Les paramètres doivent être passés par la méthode GET :
-//     http://<hébergeur>/tracegps/api/CreerUnUtilisateur?pseudo=turlututu&adrMail=delasalle.sio.eleves@gmail.com&numTel=1122334455&lang=xml
-
-// connexion du serveur web à la base MySQL
 $dao = new DAO();
 
-// Récupération des données transmises
-$pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
-$mdpSha1 = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
-$lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
-$pseudoConsulte = ( empty($this->request['pseudoConsulte'])) ? "" : $this->request['pseudoConsulte'];
+// Récupération des paramètres
+$pseudo = (empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
+$mdpSha1 = (empty($this->request['mdp'])) ? "" : $this->request['mdp'];
+$pseudoConsulte = (empty($this->request['pseudoConsulte'])) ? "" : $this->request['pseudoConsulte'];
+$lang = (empty($this->request['lang'])) ? "" : $this->request['lang'];
 
+$msg = "";
+$code_reponse = null;
+$lesTraces = null;
 
-
-// "xml" par défaut si le paramètre lang est absent ou incorrect
+// "xml" par défaut
 if ($lang != "json") $lang = "xml";
 
-// La méthode HTTP utilisée doit être GET
-if ($this->getMethodeRequete() != "GET")
-{	$msg = "Erreur : méthode HTTP incorrecte.";
+// Vérification de la méthode HTTP
+if ($this->getMethodeRequete() != "GET") {
+    $msg = "Erreur : méthode HTTP incorrecte.";
     $code_reponse = 406;
 }
+else if ($pseudo == "" || $mdpSha1 == "" || $pseudoConsulte == "") {
+    $msg = "Erreur : données incomplètes.";
+    $code_reponse = 400;
+}
+else if ($dao->getNiveauConnexion($pseudo, $mdpSha1) == 0) {
+    $msg = "Erreur : authentification incorrecte.";
+    $code_reponse = 401;
+}
+else if (!$dao->existePseudoUtilisateur($pseudoConsulte)) {
+    $msg = "Erreur : pseudo consulté inexistant.";
+    $code_reponse = 404;
+}
 else {
-    // Les paramètres doivent être présents
-    if ( $pseudo == "" || $mdpSha1 == "" )
-    {	$msg = "Erreur : données incomplètes.";
-        $code_reponse = 400;
-    }else {
-        		if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 ) {
-        			$msg = "Erreur : authentification incorrecte.";
-        			$code_reponse = 401;
-        		}
-                else{
+    $idAutorise = $dao->getUnUtilisateur($pseudo)->getId();
+    $idAutorisant = $dao->getUnUtilisateur($pseudoConsulte)->getId();
 
-                    $idAConsulter = $dao->existePseudoUtilisateur($pseudoConsulte);
-                    if($idAConsulter == null) {
-                        $msg ="Erreur : pseudo consulté inexistant.";
-                        $code_reponse = 404;
-                }
-                else{
-                        $idAutorisant = $dao->getUnUtilisateur($pseudoConsulte)->getId();
-                        $idAutorise = $dao->getUnUtilisateur($pseudo)->getId();
-                                            
-                        if (!$dao->autoriseAConsulter($idAutorisant , $idAutorise)){
-                            $msg = "Erreur : vous n'êtes pas autorisé par cet utilisateur.";
-                            $code_reponse = 401;    
-                        }
-                        else{
-                            $idConsulte = $dao->getUnUtilisateur($pseudoConsulte)->getId();
-                            $lesTraces = $dao->getLesTraces($idConsulte);
-                            if(sizeof($lesTraces)== 0){
-                            $msg = "Aucune trace pour l'utilisateur ".$pseudoConsulte ;
-                            $code_reponse = 200;}
-                            else{ $msg = sizeof($lesTraces)." trace(s) pour l'utilisateur ".$pseudoConsulte;
-                                $code_reponse = 200;}
-                            
-                            }
-                        }
-                    }
-                }
-            }
-        
-// ferme la connexion à MySQL :
+    if (!$dao->autoriseAConsulter($idAutorisant, $idAutorise) && $idAutorise != $idAutorisant) {
+        $msg = "Erreur : Vous n'êtes pas autorisé par le propriétaire du parcours.";
+        $code_reponse = 403;
+    }
+    else {
+        $lesTraces = $dao->getLesTraces($idAutorisant);
+        $nbTraces = sizeof($lesTraces);
+        $msg = ($nbTraces == 0) ? "Aucune trace pour l'utilisateur ".$pseudoConsulte
+            : $nbTraces." trace(s) pour l'utilisateur ".$pseudoConsulte;
+        $code_reponse = 200;
+    }
+}
+
+// Fermeture de la connexion
 unset($dao);
 
-// création du flux en sortie
+// Création du flux en sortie
 if ($lang == "xml") {
-    $content_type = "application/xml; charset=utf-8";      // indique le format XML pour la réponse
-    $donnees = creerFluxXML ($msg);
-}
-else {
-    $content_type = "application/json; charset=utf-8";      // indique le format Json pour la réponse
-    $donnees = creerFluxJSON ($msg);
+    $content_type = "application/xml; charset=utf-8";
+    $donnees = creerFluxXML($msg, $lesTraces);
+} else {
+    $content_type = "application/json; charset=utf-8";
+    $donnees = creerFluxJSON($msg, $lesTraces);
 }
 
-// envoi de la réponse HTTP
+// Envoi de la réponse HTTP
 $this->envoyerReponse($code_reponse, $content_type, $donnees);
-
-// fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;
 
 // ================================================================================================
+// Création du flux XML
+function creerFluxXML($msg, $lesTraces) {
+    $doc = new DOMDocument();
+    $doc->version = '1.0';
+    $doc->encoding = 'UTF-8';
 
-// création du flux XML en sortie
-function creerFluxXML($msg)
-{	
-    /* Exemple de code XML
-        <?xml version="1.0" encoding="UTF-8"?>
-        <!--Service web ChangerDeMdp - BTS SIO - Lycée De La Salle - Rennes-->
-        <data>
-            <reponse>Erreur : authentification incorrecte.</reponse>
-        </data>
-     */
-    
-    // crée une instance de DOMdocument (DOM : Document Object Model)
-	$doc = new DOMDocument();
-	
-	// specifie la version et le type d'encodage
-	$doc->version = '1.0';
-	$doc->encoding = 'UTF-8';
-	
-	// crée un commentaire et l'encode en UTF-8
-	$elt_commentaire = $doc->createComment('Service web ChangerDeMdp - BTS SIO - Lycée De La Salle - Rennes');
-	// place ce commentaire à la racine du document XML
-	$doc->appendChild($elt_commentaire);
-	
-	// crée l'élément 'data' à la racine du document XML
-	$elt_data = $doc->createElement('data');
-	$doc->appendChild($elt_data);
-	
-	// place l'élément 'reponse' juste après l'élément 'data'
-	$elt_reponse = $doc->createElement('reponse', $msg);
-	$elt_data->appendChild($elt_reponse);
-	
-	// Mise en forme finale
-	$doc->formatOutput = true;
-	
-	// renvoie le contenu XML
-	return $doc->saveXML();
+    $doc->appendChild($doc->createComment('Service web GetLesParcoursDunUtilisateur - BTS SIO - Lycée De La Salle - Rennes'));
+
+    $elt_data = $doc->createElement('data');
+    $doc->appendChild($elt_data);
+
+    $elt_reponse = $doc->createElement('reponse', $msg);
+    $elt_data->appendChild($elt_reponse);
+
+    if ($lesTraces != null && sizeof($lesTraces) > 0) {
+        $elt_donnees = $doc->createElement('donnees');
+        $elt_data->appendChild($elt_donnees);
+
+        $elt_lesTraces = $doc->createElement('lesTraces');
+        $elt_donnees->appendChild($elt_lesTraces);
+
+        foreach ($lesTraces as $uneTrace) {
+            $elt_trace = $doc->createElement('trace');
+            $elt_lesTraces->appendChild($elt_trace);
+
+            $elt_trace->appendChild($doc->createElement('id', $uneTrace->getId()));
+            $elt_trace->appendChild($doc->createElement('dateHeureDebut', $uneTrace->getDateHeureDebut()));
+            $elt_trace->appendChild($doc->createElement('terminee', $uneTrace->getTerminee() ? '1' : '0'));
+
+            if ($uneTrace->getTerminee() && $uneTrace->getDateHeureFin() != null) {
+                $elt_trace->appendChild($doc->createElement('dateHeureFin', $uneTrace->getDateHeureFin()));
+            }
+            if ($uneTrace->getDistanceTotale() != null) {
+                $elt_trace->appendChild($doc->createElement('distance', $uneTrace->getDistanceTotale()));
+            }
+
+            $elt_trace->appendChild($doc->createElement('idUtilisateur', $uneTrace->getIdUtilisateur()));
+
+            // Création d'un conteneur vide pour les points
+            $elt_lesPoints = $doc->createElement('lesPoints');
+            $elt_trace->appendChild($elt_lesPoints);
+        }
+    }
+
+    $doc->formatOutput = true;
+    return $doc->saveXML();
 }
 
 // ================================================================================================
+// Création du flux JSON
+function creerFluxJSON($msg, $lesTraces) {
+    if ($lesTraces == null || sizeof($lesTraces) == 0) {
+        $elt_data = ["reponse" => $msg];
+    } else {
+        $tableauTraces = [];
+        foreach ($lesTraces as $uneTrace) {
+            $objetTrace = [
+                "id" => $uneTrace->getId(),
+                "dateHeureDebut" => $uneTrace->getDateHeureDebut(),
+                "terminee" => $uneTrace->getTerminee(),
+                "idUtilisateur" => $uneTrace->getIdUtilisateur()
+            ];
+            if ($uneTrace->getTerminee() && $uneTrace->getDateHeureFin() != null) {
+                $objetTrace["dateHeureFin"] = $uneTrace->getDateHeureFin();
+            }
+            if ($uneTrace->getDistanceTotale() != null) {
+                $objetTrace["distance"] = $uneTrace->getDistanceTotale();
+            }
 
-// création du flux JSON en sortie
-function creerFluxJSON($msg)
-{
-    /* Exemple de code JSON
-         {
-             "data": {
-                "reponse": "Erreur : authentification incorrecte."
-             }
-         }
-     */
-    
-    // construction de l'élément "data"
-    $elt_data = ["reponse" => $msg];
-    
-    // construction de la racine
-    $elt_racine = ["data" => $elt_data];
-    
-    // retourne le contenu JSON (l'option JSON_PRETTY_PRINT gère les sauts de ligne et l'indentation)
-    return json_encode($elt_racine, JSON_PRETTY_PRINT);
+            $tableauTraces[] = $objetTrace;
+        }
+
+        $elt_donnees = ["lesTraces" => $tableauTraces];
+        $elt_data = ["reponse" => $msg, "donnees" => $elt_donnees];
+    }
+
+    return json_encode(["data" => $elt_data], JSON_PRETTY_PRINT);
 }
-
-// ================================================================================================
 ?>
