@@ -107,9 +107,7 @@ function creerFluxXML($msg, $lesTraces) {
 
             $elt_trace->appendChild($doc->createElement('idUtilisateur', $uneTrace->getIdUtilisateur()));
 
-            // Création d'un conteneur vide pour les points
-            $elt_lesPoints = $doc->createElement('lesPoints');
-            $elt_trace->appendChild($elt_lesPoints);
+
         }
     }
 
