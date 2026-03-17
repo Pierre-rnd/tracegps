@@ -32,7 +32,7 @@ minuscule, une lettre majuscule et un chiffre !";
     }
 
     // connexion du serveur web à la base MySQL
-    include_once ('modele/DAO.class.php');
+    include_once ('modele/DAO.php');
     $dao = new DAO();
 
     // affichage normal du menu
