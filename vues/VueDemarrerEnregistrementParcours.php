@@ -120,6 +120,10 @@
 						<input type="text" name="txtAltitude" id="txtAltitude" readonly="readonly" data-mini="true" placeholder="Altitude" value="<?php echo $altitude; ?>">
 					</div>
 
+                    <div data-role="fieldcontain">
+                        <input type="checkbox" name="caseEnvoiMail" id="caseEnvoiMail" data-mini="true">
+                        <label for="caseEnvoiMail">Envoyer un courriel aux utilisateurs autorisés</label>
+                    </div>
 					<div data-role="fieldcontain">
 						<input type="submit" name="btnDemarrer" id="btnDemarrer" value="Démarrer l'enregistrement" data-mini="true">
 					</div>

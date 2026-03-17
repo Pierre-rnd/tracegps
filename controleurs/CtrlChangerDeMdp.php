@@ -35,9 +35,9 @@ else {
             include_once ('vues/VueChangerDeMdp.php');
         }
         else {
-            if ( strlen($nouveauMdp) < 8 ) {
+            if ( ! Outils::estUnMdpValide($nouveauMdp) ) {
                 // si le mot de passe a moins de 8 caractères, réaffichage de la vue avec un message explicatif
-                $message = 'Le mot de passe doit comporter au moins 8 caractères !';
+                $message = 'Le mot de passe doit comporter au moins 8 caractères, dont au moins une lettre minuscule, une lettre majuscule et un chiffre !';
                 $typeMessage = 'avertissement';
                 $themeFooter = $themeProbleme;
                 include_once ('vues/VueChangerDeMdp.php');
@@ -54,7 +54,7 @@ else {
                     // connexion du serveur web à la base MySQL
                     include_once ('modele/DAO.class.php');
                     $dao = new DAO();
-                    
+
                     // enregistre le nouveau mot de passe de l'utilisateur dans la bdd après l'avoir codé en SHA1
                     $ok = $dao->modifierMdpUtilisateur ($pseudo, $nouveauMdp);
                     if ( ! $ok ) {
