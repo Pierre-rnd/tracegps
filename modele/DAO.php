@@ -324,7 +324,24 @@ $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
 $ok = @Outils::envoyerMail($adrMail, $sujet, $message, $ADR_MAIL_EMETTEUR);
         return $ok;
     }
-    
+
+    public function envoyerMailParcours($pseudo, $destinataire, $nomDestinataire)
+    {
+        global $ADR_MAIL_EMETTEUR; // l’adresse d’envoi configurée
+
+        $heure = date("H:i:s");
+
+        $sujet = "Démarrage d'un parcours";
+
+        $message = "Cher ou chère $nomDestinataire,\n\n";
+        $message .= "Vous avez demandé à $pseudo l'autorisation de consulter ses parcours.\n";
+        $message .= "$pseudo vient de démarrer un nouveau parcours à $heure.\n\n";
+        $message .= "Cordialement.\n";
+        $message .= "L'équipe TraceGPS.";
+
+        // on utilise la fonction Outils::envoyerMail pour que ça passe via le service web
+        return @Outils::envoyerMail($destinataire, $sujet, $message, $ADR_MAIL_EMETTEUR);
+    }
     
     // Le code restant à développer va être réparti entre les membres de l'équipe de développement.
     // Afin de limiter les conflits avec GitHub, il est décidé d'attribuer une zone de ce fichier à chaque développeur.
@@ -1026,11 +1043,11 @@ $ok = @Outils::envoyerMail($adrMail, $sujet, $message, $ADR_MAIL_EMETTEUR);
 
     public function creerUneTrace($uneTrace)
     {
-        $sql = "INSERT INTO tracegps_traces (id, dateDebut, dateFin, terminee, idUtilisateur) ";
-        $sql.= " VALUES (:id, :dateDebut, :dateFin, :terminee, :idUtilisateur);";
+        $sql = "INSERT INTO tracegps_traces (dateDebut, dateFin, terminee, idUtilisateur)
+        VALUES (:dateDebut, :dateFin, :terminee, :idUtilisateur);";
 
         $req = $this->cnx->prepare($sql);
-        $req->bindValue(":id", $uneTrace->getId(), PDO::PARAM_INT);
+
         $req->bindValue(":dateDebut", $uneTrace->getDateHeureDebut(), PDO::PARAM_STR);
 
         if ($uneTrace->getDateHeureFin() == null)
@@ -1042,6 +1059,10 @@ $ok = @Outils::envoyerMail($adrMail, $sujet, $message, $ADR_MAIL_EMETTEUR);
         $req->bindValue(":idUtilisateur", $uneTrace->getIdUtilisateur(), PDO::PARAM_INT);
 
         $ok = $req->execute();
+
+        // 🔥 TRÈS IMPORTANT
+        $id = $this->cnx->lastInsertId();
+        $uneTrace->setId($id);
 
         $req->closeCursor();
         return $ok;

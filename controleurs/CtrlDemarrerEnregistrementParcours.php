@@ -1,103 +1,97 @@
 <?php
 // Projet TraceGPS - version web mobile
 // fichier : controleurs/CtrlDemarrerEnregistrementParcours.php
+// Rôle : préparer la vue de démarrage d'un parcours
+// Dernière mise à jour : 01/11/2021 par dP
 
 // on vérifie si le demandeur de cette action est bien authentifié
-if ( $_SESSION['niveauConnexion'] == 0)
-{
-    header ("Location: index.php?action=Deconnecter");
-}
-else
-{
-    if ( ! isset ($_POST ["txtLatitude"]) && ! isset ($_POST ["txtLongitude"]) && ! isset ($_POST ["txtAltitude"]) && ! isset ($_POST ["btnFrequence"]) )
-    {
-        // premier affichage
+global $ADR_MAIL_EMETTEUR;
+if ($_SESSION['niveauConnexion'] == 0) {   // si le demandeur n'est pas authentifié, il s'agit d'une tentative d'accès frauduleux
+    // dans ce cas, on provoque une redirection vers la page de connexion
+    header("Location: index.php?action=Deconnecter");
+} else {
+    if (! isset($_POST["txtLatitude"]) && ! isset($_POST["txtLongitude"]) && ! isset($_POST["txtAltitude"]) && ! isset($_POST["btnFrequence"])) {   // si les données n'ont pas été postées, c'est le premier appel du formulaire : affichage de la vue sans message d'erreur
         $latitude = '';
         $longitude = '';
         $altitude = '0';
         $frequence = '';
+        $envoyerMail = 'off';
         $message = '';
-        $typeMessage = '';
+        $typeMessage = '';            // 2 valeurs possibles : 'information' ou 'avertissement'
         $themeFooter = $themeNormal;
-        include_once ('vues/VueDemarrerEnregistrementParcours.php');
-    }
-    else
-    {
-        // récupération des données
-        if ( empty ($_POST ["txtLatitude"]) )  $latitude = "";  else   $latitude = $_POST ["txtLatitude"];
-        if ( empty ($_POST ["txtLongitude"]) ) $longitude = ""; else   $longitude = $_POST ["txtLongitude"];
-        if ( empty ($_POST ["txtAltitude"]) )  $altitude = "0"; else   $altitude = $_POST ["txtAltitude"];
-        if ( empty ($_POST ["btnFrequence"]) ) $frequence = ""; else   $frequence = $_POST ["btnFrequence"];
+        include_once('vues/VueDemarrerEnregistrementParcours.php');
+    } else {   // récupération des données postées
+        if (empty($_POST["txtLatitude"]) == true)  $latitude = "";
+        else   $latitude = $_POST["txtLatitude"];
+        if (empty($_POST["txtLongitude"]) == true)  $longitude = "";
+        else   $longitude = $_POST["txtLongitude"];
+        if (empty($_POST["txtAltitude"]) == true)  $altitude = "0";
+        else   $altitude = $_POST["txtAltitude"];
+        if (empty($_POST["btnFrequence"]) == true)  $frequence = "";
+        else   $frequence = $_POST["btnFrequence"];
 
-        // 🔽 NOUVEAU : récupération checkbox
-        if ( empty($_POST["caseEnvoiMail"]) )
-            $envoiMail = false;
-        else
-            $envoiMail = true;
-
-        if ($latitude == '' || $longitude == '' || $frequence == '')
-        {
+        if ($latitude == '' || $longitude == '' || $frequence == '')    // l'altitude n'est pas obligatoire
+        {   // si les données sont incomplètes, réaffichage de la vue avec un message explicatif
             $message = 'Erreur : données incomplètes.';
             $typeMessage = 'avertissement';
             $themeFooter = $themeProbleme;
-            include_once ('vues/VueDemarrerEnregistrementParcours.php');
-        }
-        else
-        {
-            include_once ('modele/DAO.class.php');
+            include_once('vues/VueDemarrerEnregistrementParcours.php');
+        } else {   // connexion du serveur web à la base MySQL
+            include_once('modele/dao.php');
             $dao = new DAO();
 
-            // récupération id utilisateur
+            // récupération de l'id de l'utilisateur
             $idUtilisateurConsulte = $dao->getUnUtilisateur($pseudo)->getId();
 
-            // création trace
+            if (empty($_POST["caseEnvoyerMail"])) $envoyerMail = 'off';
+            else $envoyerMail = $_POST["caseEnvoyerMail"];
+
+            // créer et enregistrer la trace
             $laTrace = new Trace(0, date('Y-m-d H:i:s', time()), null, false, $idUtilisateurConsulte);
             $ok = $dao->creerUneTrace($laTrace);
+            // récupération de l'id de la trace
             $idTrace = $laTrace->getId();
 
-            // création premier point
+            // créer et enregistrer le premier point
             $idPoint = 1;
             $dateHeure = date('Y-m-d H:i:s', time());
             $rythmeCardio = 0;
             $tempsCumule = 0;
             $distanceCumulee = 0;
             $vitesse = 0;
-
             $unPoint = new PointDeTrace($idTrace, $idPoint, $latitude, $longitude, $altitude, $dateHeure, $rythmeCardio, $tempsCumule, $distanceCumulee, $vitesse);
             $ok = $dao->creerUnPointDeTrace($unPoint);
 
-            // 🔥 NOUVEAU : envoi des mails
-            if ( $envoiMail )
-            {
-                $lesUtilisateurs = $dao->getLesUtilisateursAutorises($pseudo);
+            if ($envoyerMail == 'on') {
 
-                foreach ($lesUtilisateurs as $unUtilisateur)
-                {
-                    $destinataire = $unUtilisateur['adrMail'];
-                    $nomDestinataire = $unUtilisateur['pseudo'];
+                // récupération des utilisateurs autorisés à suivre les parcours de l'utilisateur connecté
+                $lesUtilisateursAutorises = $dao->getLesUtilisateursAutorises($idUtilisateurConsulte);
+                $heureDemarrage = date('H:i:s', time());
 
-                    $heure = date("H:i:s");
+                foreach ($lesUtilisateursAutorises as $unUtilisateur) {
+                    $adrMail = $unUtilisateur->getAdrMail();
+                    $pseudoDestinataire = $unUtilisateur->getPseudo();
 
-                    $sujet = "Démarrage d'un parcours";
+                    $sujet = "TraceGPS - Démarrage d'un parcours";
+                    $corps = "Cher ou chère " . $pseudoDestinataire . ",\n\n"
+                        . "Vous avez demandé à " . $pseudo . " l'autorisation de consulter ses parcours.\n"
+                        . $pseudo . " vient de démarrer un nouveau parcours à " . $heureDemarrage . ".\n\n"
+                        . "Cordialement.\n"
+                        . "L'équipe TraceGPS.";
 
-                    $message = "Cher ou chère $nomDestinataire,\n\n";
-                    $message .= "Vous avez demandé à $pseudo l'autorisation de consulter ses parcours.\n";
-                    $message .= "$pseudo vient de démarrer un nouveau parcours à $heure.\n\n";
-                    $message .= "Cordialement.\n";
-                    $message .= "L'équipe TraceGPS.";
-
-                    mail($destinataire, $sujet, $message);
+                    Outils::envoyerMail($adrMail, $sujet, $corps, $ADR_MAIL_EMETTEUR);
                 }
             }
 
-            unset($dao);
+            unset($dao);        // fermeture de la connexion à MySQL
 
-            // variables de session
+            // on mémorise les paramètres dans des variables de session
             $_SESSION['frequence'] = $frequence;
             $_SESSION['idTrace'] = $idTrace;
             $_SESSION['idPoint'] = $idPoint;
 
-            header ("Location: index.php?action=EnvoyerPosition");
+            // redirection vers la page d'envoi de la position
+            header("Location: index.php?action=EnvoyerPosition");
         }
     }
 }

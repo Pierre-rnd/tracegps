@@ -90,10 +90,6 @@ class Outils
 		}
 		return $lePrenom;
 	}
-
-    public static function estUnMdpValide($unMdp) {
-        return preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $unMdp);
-    }
 	
 	// La fonction corrigerTelephone($leNumero) reçoit un numéro et fournit ce numéro corrigé en le mettant sous la forme 
 	// de 5 groupes de 2 chiffres séparés par des points
@@ -300,6 +296,10 @@ class Outils
 		// on retourne true si le numéro est bon, mais aussi si le numéro est vide :
 		if ( preg_match ( $EXPRESSION , $numTelAvalider) == true || $numTelAvalider == "" ) return true; else return false;
 	}
+
+    public static function estUnMdpValide($unMdp) {
+        return preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $unMdp);
+    }
 
 } // fin de la classe Outils
 

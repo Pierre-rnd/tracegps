@@ -26,7 +26,7 @@ else {
         if ( empty ($_POST ["txtNouveauMdp"]) == true)  $nouveauMdp = "";  else   $nouveauMdp = $_POST ["txtNouveauMdp"];
         if ( empty ($_POST ["txtConfirmationMdp"]) == true)  $confirmationMdp = "";  else   $confirmationMdp = $_POST ["txtConfirmationMdp"];
         if ( empty ($_POST ["caseAfficherMdp"]) == true)  $afficherMdp = 'off';  else   $afficherMdp = $_POST ["caseAfficherMdp"];
-        
+
         if ( $nouveauMdp == "" || $confirmationMdp == "" ) {
             // si les données sont incomplètes, réaffichage de la vue avec un message explicatif
             $message = 'Données incomplètes !';
@@ -35,6 +35,7 @@ else {
             include_once ('vues/VueChangerDeMdp.php');
         }
         else {
+            include_once ('modele/Outils.php');
             if ( ! Outils::estUnMdpValide($nouveauMdp) ) {
                 // si le mot de passe a moins de 8 caractères, réaffichage de la vue avec un message explicatif
                 $message = 'Le mot de passe doit comporter au moins 8 caractères, dont au moins une lettre minuscule, une lettre majuscule et un chiffre !';
@@ -52,7 +53,7 @@ else {
                 }
                 else {
                     // connexion du serveur web à la base MySQL
-                    include_once ('modele/DAO.class.php');
+                    include_once ('modele/DAO.php');
                     $dao = new DAO();
 
                     // enregistre le nouveau mot de passe de l'utilisateur dans la bdd après l'avoir codé en SHA1
@@ -74,7 +75,7 @@ else {
                             $typeMessage = 'avertissement';
                             $themeFooter = $themeProbleme;
                             unset($dao);		// fermeture de la connexion à MySQL
-                            include_once ('vues/VueChangerDeMdp.php');
+                            include_once ('vues/VueMenu.php');
                         }
                         else {
                             // tout a bien fonctionné
@@ -82,7 +83,7 @@ else {
                             $typeMessage = 'information';
                             $themeFooter = $themeNormal;
                             unset($dao);		// fermeture de la connexion à MySQL
-                            include_once ('vues/VueChangerDeMdp.php');
+                            include_once ('vues/VueMenu.php');
                         }
                     }
                 }

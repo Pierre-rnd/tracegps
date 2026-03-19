@@ -8,7 +8,7 @@ if ( $_SESSION['niveauConnexion'] == 0) {
 }
 else {
     // ajout de la vérification du mot de passe
-    include_once ('modele/Outils.class.php');
+    include_once ('modele/Outils.php');
 
     $mdp = $_SESSION['mdp'];   // mot de passe utilisé lors de la connexion
 
