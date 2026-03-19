@@ -35,22 +35,22 @@ if ($lang != "json") $lang = "xml";
 
 // La méthode HTTP utilisée doit être GET
 if ($this->getMethodeRequete() != "GET")
-{  $msg = "Erreur : méthode HTTP incorrecte.";
+{$msg = "Erreur : méthode HTTP incorrecte.";
     $code_reponse = 406;
 }
 else {
     // Les paramètres doivent être présents
     if ( $pseudo == "" || $mdpSha1 == "" || $pseudoDestinataire == "" || $texteMessage == "" || $nomPrenom == "" )
-    {  $msg = "Erreur : données incomplètes.";
+    {$msg = "Erreur : données incomplètes.";
         $code_reponse = 400;
     }
     else
-    {  if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 )
+    {if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 )
     {   $msg = "Erreur : authentification incorrecte.";
         $code_reponse = 401;
     }
     else
-        {  // contrôle d'existence de $pseudoDestinataire
+        {// contrôle d'existence de $pseudoDestinataire
             $utilisateurDestinataire = $dao->getUnUtilisateur($pseudoDestinataire);
             if ($utilisateurDestinataire == null)
             {   $msg = "Erreur : pseudo utilisateur inexistant.";
@@ -115,7 +115,7 @@ exit;
 
 // création du flux XML en sortie
 function creerFluxXML($msg)
-{  // crée une instance de DOMdocument (DOM : Document Object Model)
+{// crée une instance de DOMdocument (DOM : Document Object Model)
     $doc = new DOMDocument();
 
     // specifie la version et le type d'encodage

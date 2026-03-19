@@ -297,6 +297,23 @@ class Outils
 		if ( preg_match ( $EXPRESSION , $numTelAvalider) == true || $numTelAvalider == "" ) return true; else return false;
 	}
 
+
+    public static function estUnMdpValide($unMdp)
+    {
+        // Expression régulière :
+        // - au moins 8 caractères
+        // - au moins 1 minuscule
+        // - au moins 1 majuscule
+        // - au moins 1 chiffre
+        $EXPRESSION = "#^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$#";
+
+        // On retourne true si le mot de passe est valide
+        if (preg_match($EXPRESSION, $unMdp))
+            return true;
+        else
+            return false;
+    }
+
 } // fin de la classe Outils
 
 // ATTENTION : on ne met pas de balise de fin de script pour ne pas prendre le risque

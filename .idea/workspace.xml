@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="7c15f364-6f35-4b56-83ec-5963ca5d02e2" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -13,9 +16,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 6
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
   <component name="ProjectId" id="3AqajoLMokun1Dp7Dn4sz8GNaf7" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -25,10 +28,14 @@
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "Matheo",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/guiboux.m/Documents/GitHub/tracegps",
+    "last_opened_file_path": "C:/wamp64/www/ws-php-mg/tracegps",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
   }
@@ -49,6 +56,10 @@
       <option name="presentableId" value="Default" />
       <updated>1773322691806</updated>
       <workItem from="1773322692989" duration="84000" />
+      <workItem from="1773389473805" duration="319000" />
+      <workItem from="1773751163778" duration="1392000" />
+      <workItem from="1773753062997" duration="10523000" />
+      <workItem from="1773912647549" duration="11453000" />
     </task>
     <servers />
   </component>
