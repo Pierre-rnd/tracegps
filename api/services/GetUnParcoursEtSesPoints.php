@@ -1,14 +1,14 @@
 <?php
-// Rôle : permet à un utilisateur d'obtenir le détail d'un de ses parcours ou d'un parcours d'un membre qui l'autorise
-// le service web doit avoir 4 paramètres
-// pseudo : pseudo de l'utilisateur
-// mdp : mot de passe hashé en sha1
-// idTrace, l'id de la trace à consulter
-// lang : language utilisé pour le flux de données (xml ou json)
+    // Rôle : permet à un utilisateur d'obtenir le détail d'un de ses parcours ou d'un parcours d'un membre qui l'autorise
+    // le service web doit avoir 4 paramètres 
+    // pseudo : pseudo de l'utilisateur
+    // mdp : mot de passe hashé en sha1
+    // idTrace, l'id de la trace à consulter
+    // lang : language utilisé pour le flux de données (xml ou json)
 
-// le service web retourne un flux de message xml contenant les traces.
+    // le service web retourne un flux de message xml contenant les traces.
 
-//
+    // 
 
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
@@ -27,42 +27,42 @@ $code_reponse = null;
 
 // La méthode HTTP utilisée doit être GET
 if ($this->getMethodeRequete() != "GET")
-{   $msg = "Erreur : méthode HTTP incorrecte.";
+{$msg = "Erreur : méthode HTTP incorrecte.";
     $code_reponse = 406;
 }
 else {
     // Les paramètres doivent être présents
     if ( $pseudo == "" || $mdpSha1 == "" )
-    {   $msg = "Erreur : données incomplètes.";
+    {$msg = "Erreur : données incomplètes.";
         $code_reponse = 400;
     }
     else
-    {   if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 ) {
-        $msg = "Erreur : authentification incorrecte.";
-        $code_reponse = 401;
-    }
-    else
+    {if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 ) {
+    $msg = "Erreur : authentification incorrecte.";
+    $code_reponse = 401;
+        }
+    else 
     {
-        // on regarde si la trace existe, et si elle n'est pas nu
-        if ( $dao->getUneTrace($idTrace ) == null) {
-            $msg = "Erreur : parcours inexistant.";
-            $code_reponse = 402;
-        }
-        else{
-            // on récupère la trace depuis l'idtrace
-            $laTrace = $dao->getUneTrace($idTrace);
-            $proprietaire = $laTrace->getIdUtilisateur();
-            $utilisateurAutorise = $dao->getUnUtilisateur($pseudo);
-            $id = $utilisateurAutorise->getId();
-            $autorise = $dao->autoriseAConsulter($proprietaire, $id);
-
-
-            if (!$autorise && $proprietaire != $id){
-                $laTrace = null;
-                $msg = "Erreur : Vous n'êtes pas autorisé par le propriétaire du parcours.";
-                $code_reponse = 403;
+            // on regarde si la trace existe, et si elle n'est pas nu
+             if ( $dao->getUneTrace($idTrace ) == null) {
+                $msg = "Erreur : parcours inexistant.";
+                $code_reponse = 402;
             }
-        }
+            else{
+                // on récupère la trace depuis l'idtrace
+                $laTrace = $dao->getUneTrace($idTrace);
+                $proprietaire = $laTrace->getIdUtilisateur();
+                $utilisateurAutorise = $dao->getUnUtilisateur($pseudo);
+                $id = $utilisateurAutorise->getId();
+                $autorise = $dao->autoriseAConsulter($proprietaire, $id);
+
+
+                 if (!$autorise && $proprietaire != $id){
+                    $laTrace = null;
+                    $msg = "Erreur : Vous n'êtes pas autorisé par le propriétaire du parcours.";
+                    $code_reponse = 403;
+                 }
+            }
     }
     }
 }
@@ -110,7 +110,7 @@ function creerFluxXML($msg, $laTrace)
     <dateHeure>2018-01-19 13:08:48</dateHeure>
     <rythmeCardio>81</rythmeCardio>
     </point>
- .....................................................................................................
+.....................................................................................................
     <point>
     <id>10</id>
     <latitude>48.2199</latitude>
@@ -120,37 +120,37 @@ function creerFluxXML($msg, $laTrace)
     <rythmeCardio>90</rythmeCardio>
    </point>
   </lesPoints>
- </donnees>
+</donnees>
 </data>
      */
 
 {
 
     // crée une instance de DOMdocument (DOM : Document Object Model)
-    $doc = new DOMDocument();
+$doc = new DOMDocument();
 
-    // specifie la version et le type d'encodage
-    $doc->version = '1.0';
-    $doc->encoding = 'UTF-8';
+// specifie la version et le type d'encodage
+$doc->version = '1.0';
+$doc->encoding = 'UTF-8';
 
-    // crée un commentaire et l'encode en UTF-8
-    $elt_commentaire = $doc->createComment('Service web GetUnParcoursEtSesPoints - BTS SIO - Lycée De La Salle - Rennes');
-    // place ce commentaire à la racine du document XML
-    $doc->appendChild($elt_commentaire);
+// crée un commentaire et l'encode en UTF-8
+$elt_commentaire = $doc->createComment('Service web GetUnParcoursEtSesPoints - BTS SIO - Lycée De La Salle - Rennes');
+// place ce commentaire à la racine du document XML
+$doc->appendChild($elt_commentaire);
 
-    // crée l'élément 'data' à la racine du document XML
-    $elt_data = $doc->createElement('data');
-    $doc->appendChild($elt_data);
+// crée l'élément 'data' à la racine du document XML
+$elt_data = $doc->createElement('data');
+$doc->appendChild($elt_data);
 
-    // place l'élément 'reponse' dans l'élément 'data'
-    $elt_reponse = $doc->createElement('reponse', $msg);
-    $elt_data->appendChild($elt_reponse);
+// place l'élément 'reponse' dans l'élément 'data'
+$elt_reponse = $doc->createElement('reponse', $msg);
+$elt_data->appendChild($elt_reponse);
 
     // traitement des utilisateurs
-    if ($laTrace != null) {
-        // place l'élément 'donnees' dans l'élément 'data'
-        $elt_donnees = $doc->createElement('donnees');
-        $elt_data->appendChild($elt_donnees);
+if ($laTrace != null) {
+    // place l'élément 'donnees' dans l'élément 'data'
+    $elt_donnees = $doc->createElement('donnees');
+    $elt_data->appendChild($elt_donnees);    
 
         // Création de l'élément 'trace'
         $elt_trace = $doc->createElement('trace');
@@ -205,55 +205,55 @@ function creerFluxXML($msg, $laTrace)
     }
 
 
-    // Mise en forme finale
-    $doc->formatOutput = true;
+// Mise en forme finale
+$doc->formatOutput = true;
 
-    // renvoie le contenu XML
-    return $doc->saveXML();
+// renvoie le contenu XML
+return $doc->saveXML();
 
 
 }
 
 function creerFluxJSON($msg, $laTrace)
-    /*
-    {
-      "data": {
-        "reponse": "Données de la trace demandée.",
-        "donnees": {
-          "trace": {
-            "id": "2",
-            "dateHeureDebut": "2018-01-19 13:08:48",
-            "terminee": "1",
-            "dateHeureFin": "2018-01-19 13:11:48",
-            "idUtilisateur": "2"
-          },
-          "lesPoints": [
-            {
-              "id": "1",
-              "latitude": "48.2109",
-              "longitude": "-1.5535",
-              "altitude": "60",
-              "dateHeure": "2018-01-19 13:08:48",
-              "rythmeCardio": "81"
-            },
-            .........................
-            {
-              "id": "10",
-              "latitude": "48.2199",
-              "longitude": "-1.5445",
-              "altitude": "150",
-              "dateHeure": "2018-01-19 13:11:48",
-              "rythmeCardio": "90"
-            }
-          ]
+/*
+{
+  "data": {
+    "reponse": "Données de la trace demandée.",
+    "donnees": {
+      "trace": {
+        "id": "2",
+        "dateHeureDebut": "2018-01-19 13:08:48",
+        "terminee": "1",
+        "dateHeureFin": "2018-01-19 13:11:48",
+        "idUtilisateur": "2"
+      },
+      "lesPoints": [
+        {
+          "id": "1",
+          "latitude": "48.2109",
+          "longitude": "-1.5535",
+          "altitude": "60",
+          "dateHeure": "2018-01-19 13:08:48",
+          "rythmeCardio": "81"
+        },
+        .........................
+        {
+          "id": "10",
+          "latitude": "48.2199",
+          "longitude": "-1.5445",
+          "altitude": "150",
+          "dateHeure": "2018-01-19 13:11:48",
+          "rythmeCardio": "90"
         }
-      }
+      ]
     }
-    */
+  }
+}
+*/
 
 {
 
-    if ($laTrace == null) {
+   if ($laTrace == null) {
         // Pas de données à renvoyer
         $elt_data = ["reponse" => $msg];
     }
